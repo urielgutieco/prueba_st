@@ -16,18 +16,27 @@
     <header>
         <div class="header-content">
             <div class="logo-container">
-                <img src="{{ url_for('static', filename='stratandtax.png') }}" alt="Logo Strat & Tax" class="logo-img">
+                <img src="stratandtax.png" alt="Logo Strat & Tax" class="logo-img">
+                <div class="logo"></div>
             </div>
             <nav>
                 <ul>
-                    <li><a href="/">Inicio</a></li>
-                    <li><a href="#" style="color:var(--color-secondary)">Acceso</a></li>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="#">Registro con Login</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <div id="login-card" class="card">
+    <div class="page-content">
+        <h1>🔐 Acceso a registro</h1>
+
+        <div style="text-align:center;" class="page-nav">
+            <a href="index.html">Inicio</a>
+            <a href="contacto.html">Registro</a>
+        </div>
+
+        <div id="login-card" class="card">
             <h2>Iniciar Sesión</h2>
             <label for="usuario">Usuario:</label>
             <input type="text" id="usuario" placeholder="Ingresa tu usuario">
@@ -188,6 +197,7 @@
         <button id="logout-btn" onclick="logout()">
             Cerrar sesión
         </button>
+    </div>
 
     <main class="page-content">
         <h1>🔐 Mi Cuenta</h1>

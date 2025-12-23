@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
         /* TUS VARIABLES Y ESTILOS MANTENIDOS */
@@ -137,49 +138,73 @@
     <header>
         <div class="header-content">
             <div class="logo-container">
-                <img src="{{ url_for('static', filename='stratandtax.png') }}" alt="Logo Strat & Tax" class="logo-img">
+                <img src="stratandtax.png" alt="Logo Strat & Tax" class="logo-img">
+                <div class="logo"></div>
             </div>
             <nav>
                 <ul>
-                    <li><a href="/">Inicio</a></li>
-                    <li><a href="/logout" style="color: var(--color-secondary);">Cerrar Sesión</a></li>
+                    <li><a href="#about">Sobre Nosotros</a></li>
+                    <li><a href="contacto.html">Registro</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <section class="hero">
+    <section id="hero" class="hero">
         <div class="hero-content">
-            <h1>Panel de Gestión Strat & Tax</h1>
-            <p>Generación de contratos y estrategias fiscales.</p>
+            <h1>Bienvenido a Strat & Tax</h1>
+            <p>Servicios y estrategias fiscales, para su tranquilidad financiera.</p>
+            <a href="contacto.html" class="btn">Login</a>
         </div>
     </section>
 
-    <div class="container">
-        <h2>Generar Nueva Solicitud</h2>
-        <form id="contract-form" action="/generate-word" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label>Servicio:</label>
-                <select name="servicio" required>
-                    <option value="Servicios de construccion de unidades unifamiliares">Construcción Unifamiliar</option>
-                    <option value="Ingenieria civil">Ingeniería Civil</option>
-                    </select>
+    <section id="about" class="about">
+        <div class="container-content">
+            <h2>Sobre Nosotros</h2>
+            <div class="about-content">
+                <img src="https://media.licdn.com/dms/image/v2/D4E12AQElDwzi49j9BA/article-cover_image-shrink_720_1280/B4EZj3el9iIQAU-/0/1756498649702?e=2147483647&v=beta&t=6cP67ONBUCzwpyE4TpK7JFHxcajTM3o-zxW3ztKyHD0"
+                    alt="Oficina profesional">
+                <div>
+                    <p>En **Strat & Tax**, somos un despacho fiscal dedicado a ofrecer soluciones integrales en materia
+                        tributaria. Nuestro equipo de expertos está comprometido con la excelencia y la confidencialidad
+                        para ayudar a nuestros clientes a navegar por el complejo mundo de las finanzas.</p>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label>Razón Social / Nombre Cliente:</label>
-                <input type="text" name="razon_social" required>
-            </div>
+        </div>
+    </section>
 
-            <div class="form-group">
-                <label>Cargar Firma (Imagen):</label>
-                <input type="file" name="imagen_usuario" accept="image/*" required>
+    <section id="services" class="services">
+        <div class="container-content">
+            <h2>Nuestros Servicios</h2>
+            <div class="services-content">
+                <div>
+                    <p>Ofrecemos una amplia gama de servicios fiscales adaptados a sus necesidades. Confíe en nuestra
+                        experiencia.</p>
+                    <div class="services-grid">
+                        <div class="service-item">
+                            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=400&q=80"
+                                alt="Consultoría fiscal">
+                            <h3>Consultoría Fiscal</h3>
+                            <p>Asesoramiento personalizado para optimizar su carga tributaria.</p>
+                        </div>
+                        <div class="service-item">
+                            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=80"
+                                alt="Auditorías">
+                            <h3>Auditorías</h3>
+                            <p>Revisiones exhaustivas para asegurar el cumplimiento normativo.</p>
+                        </div>
+                        <div class="service-item">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+                                alt="Planificación financiera">
+                            <h3>Planificación Financiera</h3>
+                            <p>Estrategias para su futuro financiero y reducción de riesgos.</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="https://ecovismexico.mx/v2/wp-content/uploads/2023/08/consultor-financiero-consultor-contador-profesional-1-scaled.jpg"
+                    alt="Reunión de negocios">
             </div>
-
-            <button type="submit" class="btn-submit">Generar y Enviar Documentos</button>
-            <div id="loading-msg">⏳ Procesando documentos, por favor espere...</div>
-        </form>
-    </div>
+        </div>
 
     <footer>
         &copy; 2025 Strat & Tax - Sistema de Gestión Privado.
