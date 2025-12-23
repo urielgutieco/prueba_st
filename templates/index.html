@@ -10,18 +10,125 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* Feedback visual para la carga */
-        .loading {
+        /* TUS VARIABLES Y ESTILOS MANTENIDOS */
+        :root {
+            --bg: #9c9c9cce;
+            --accent: #323c47;
+            --accent-light: #565758;
+            --muted: #515457;
+            --panel: #bbbbbb;
+            --border: #70859a;
+            --shadow: 0 4px 12px rgba(71, 82, 199, 0.1);
+            --radius: 8px;
+            --font-main: "Inter", system-ui, sans-serif;
+            --color-secondary: #d4b537;
+        }
+
+        html, body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--accent);
+            font-family: var(--font-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--accent);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            height: 60px; /* Ajustado */
+            width: auto;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav a {
+            color: #ffffffb3;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(50, 60, 71, 0.8), rgba(50, 60, 71, 0.8)), url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+            color: #fff;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        /* ESTILOS DEL FORMULARIO INTEGRADOS */
+        .container {
+            max-width: 800px;
+            margin: -50px auto 40px;
+            background-color: var(--panel);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: #f4f4f4;
+        }
+
+        .btn-submit {
+            background: var(--accent);
+            color: #fff;
+            padding: 15px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        #loading-msg {
             display: none;
             text-align: center;
-            padding: 10px;
-            background: #e1f5fe;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            color: #0288d1;
+            color: var(--accent);
             font-weight: bold;
+            margin-top: 10px;
+        }
+
+        footer {
+            background: var(--accent);
+            color: #c4c1c1;
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
@@ -34,49 +141,57 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="#" style="color:var(--color-secondary)">Servicios</a></li>
-                    <li><a href="{{ url_for('logout') }}" style="color: #ff4444;">Cerrar Sesión</a></li>
+                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/logout" style="color: var(--color-secondary);">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <main class="page-content">
-        <h1>Generación de Contratos</h1>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Panel de Gestión Strat & Tax</h1>
+            <p>Generación de contratos y estrategias fiscales.</p>
+        </div>
+    </section>
 
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            {% for message in messages %}
-              <div class="flash-message" style="background: #ffdbdb; padding: 10px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ff0000;">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+    <div class="container">
+        <h2>Generar Nueva Solicitud</h2>
+        <form id="contract-form" action="/generate-word" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Servicio:</label>
+                <select name="servicio" required>
+                    <option value="Servicios de construccion de unidades unifamiliares">Construcción Unifamiliar</option>
+                    <option value="Ingenieria civil">Ingeniería Civil</option>
+                    </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Razón Social / Nombre Cliente:</label>
+                <input type="text" name="razon_social" required>
+            </div>
 
-               </section>
+            <div class="form-group">
+                <label>Cargar Firma (Imagen):</label>
+                <input type="file" name="imagen_usuario" accept="image/*" required>
+            </div>
 
-        <section id="form-contacto" class="card" style="max-width: 800px; margin: 30px auto;">
-            <h2 style="text-align:center">Soporte Técnico</h2>
-            <form onsubmit="event.preventDefault(); alert('Reporte enviado al administrador');">
-                <label>Describa el problema:</label>
-                <textarea id="mensaje" rows="3" placeholder="¿Tienes algún problema con las plantillas?" required></textarea>
-                <button type="submit" style="background:#515457; color: white; border: none; padding: 10px; cursor: pointer;">Enviar Reporte</button>
-            </form>
-        </section>
+            <button type="submit" class="btn-submit">Generar y Enviar Documentos</button>
+            <div id="loading-msg">⏳ Procesando documentos, por favor espere...</div>
+        </form>
+    </div>
 
-    </main>
-
-    <footer style="text-align: center; padding: 20px; color: #666;">
-        &copy; 2025 Strat & Tax - Panel de Gestión Privado.
+    <footer>
+        &copy; 2025 Strat & Tax - Sistema de Gestión Privado.
     </footer>
 
     <script>
-        // Script para evitar múltiples envíos y mostrar carga
+        // Script corregido para coincidir con los IDs del formulario
         document.getElementById('contract-form').onsubmit = function() {
+            const btn = this.querySelector('button');
             document.getElementById('loading-msg').style.display = 'block';
-            this.querySelector('button').disabled = true;
-            this.querySelector('button').innerText = 'Procesando...';
+            btn.disabled = true;
+            btn.innerText = 'Procesando...';
         };
     </script>
 </body>
