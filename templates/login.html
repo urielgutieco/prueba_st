@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Sistema de Registro | SuperAdmin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+            --bg-dark: #020617;
+            --card-bg: rgba(255, 255, 255, .06);
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top, #1e1b4b, var(--bg-dark));
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Contenedores Principales */
+        .container {
+            width: 100%;
+            max-width: 450px;
+            transition: max-width 0.3s ease;
+        }
+
+        .container.dashboard-mode {
+            max-width: 800px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1, h2 {
+            margin: 0 0 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        p {
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* Formulario y Inputs */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .15);
+            background: rgba(255, 255, 255, .05);
+            color: white;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, .1);
+        }
+
+        option {
+            background: #1e1b4b;
+            color: white;
+        }
+
+        /* Botones */
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            font-size: 16px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-logout {
+            margin-top: 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-dim);
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border-color: #fca5a5;
+        }
+
+        .error {
+            margin-top: 12px;
+            color: #fca5a5;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Control de vistas */
+        #form-solicitud, #logout-btn {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="main-container">
+        
+        <div id="login-section" class="card">
+            <h1>SuperAdmin</h1>
+            <p>Acceso restringido</p>
+
+            <div class="form-group">
+                <input id="user" placeholder="Usuario (uriel)">
+            </div>
+            <div class="form-group">
+                <input id="password" type="password" placeholder="Password (123456)">
+            </div>
+
+            <button onclick="login()">Ingresar</button>
+            <div class="error" id="error"></div>
+        </div>
+
+        <div id="form-solicitud" class="card">
+            <h2>Generar Registro</h2>
+            <p>Complete los campos para generar el documento</p>
+            
+            <form id="solicitudForm">
+                <div class="form-group">
+                    <label for="servicio">Selecciona un servicio (*)</label>
+                    <select id="servicio" name="servicio" required>
+                        <option value="" disabled selected>--- Elige una opción ---</option>
+                        <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
+                        <option value="Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares">Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares</option>
+                        <option value="Servicio de remodelacion general de viviendas unifamiliares">Servicio de remodelacion general de viviendas unifamiliares</option>
+                        <option value="Servicios de reparacion de casas moviles en el sitio">Servicios de reparacion de casas moviles en el sitio</option>
+                        <option value="Servicios de construccion y reparacion de patios y terrazas">Servicios de construccion y reparacion de patios y terrazas</option>
+                        <option value="Ingenieria civil">Ingenieria civil</option>
+                        <option value="Servicio de mantenimiento y reparacion de equipo pesado">Servicio de mantenimiento y reparacion de equipo pesado</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="razon_social">Razón Social (*)</label>
+                    <input type="text" id="razon_social" name="razon_social" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="r_f_c">R.F.C (*)</label>
+                    <input type="text" id="r_f_c" name="r_f_c" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="correo_del_cliente">Correo del Cliente (*)</label>
+                    <input type="email" id="correo_del_cliente" name="correo_del_cliente" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="fecha_de_operacion">Fecha Operación</label>
+                        <input type="date" id="fecha_de_operacion" name="fecha_de_operacion">
+                    </div>
+                    <div class="form-group">
+                        <label for="monto_de_la_operacion_sin_iva">Monto (Sin IVA) (*)</label>
+                        <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Nombre Completo de quien Firma (*)</label>
+                    <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="comentarios">Comentarios Finales</label>
+                    <textarea id="comentarios" name="comentarios" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagen_usuario">Cargar imagen (Evidencia)</label>
+                    <input type="file" id="imagen_usuario" name="imagen_usuario" accept="image/*">
+                </div>
+
+                <button type="submit">Generar Solicitud y Descargar Word</button>
+            </form>
+
+            <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const userInp = document.getElementById('user').value;
+            const passInp = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+            const container = document.getElementById('main-container');
+
+            // Credenciales solicitadas
+            if (userInp === "uriel" && passInp === "123456") {
+                // Ocultar login, mostrar cuestionario
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('form-solicitud').style.display = 'block';
+                container.classList.add('dashboard-mode');
+                errorDiv.textContent = "";
+            } else {
+                errorDiv.textContent = "Credenciales incorrectas. Intente de nuevo.";
+            }
+        }
+
+        function logout() {
+            // Recargar la página para limpiar el estado
+            location.reload();
+        }
+
+        // Manejador del formulario
+        document.getElementById('solicitudForm').onsubmit = function(e) {
+            e.preventDefault();
+            alert("Simulación: Generando archivo Word con los datos de " + document.getElementById('razon_social').value);
+            // Aquí iría tu lógica de fetch para generar el Word
+        };
+    </script>
+</body>
+</html>
