@@ -104,7 +104,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#" @click="section = 'inicio'">Mi Empresa</a>
+            <a class="navbar-brand" href="#" @click="section = 'inicio'">Strat and Tax</a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="#" @click="section = 'inicio'">Inicio</a>
                 
@@ -163,7 +163,7 @@
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#serv1">Vivienda Unifamiliar</button>
                             </h2>
                             <div id="serv1" class="accordion-collapse collapse show" data-bs-parent="#serviciosAccordion">
-                                <div class="accordion-body">Construcción, reparación, ampliación y remodelación de casas y casas móviles.</div>
+                                <div class="accordion-body">Defensa Legal</div>
                             </div>
                         </div>
                         <div class="accordion-item">
@@ -171,7 +171,7 @@
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#serv2">Desarrollo Urbano</button>
                             </h2>
                             <div id="serv2" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion">
-                                <div class="accordion-body">Planificación urbana, alumbrado público y gestión de barrios marginales.</div>
+                                <div class="accordion-body">Estrategia Fiscal</div>
                             </div>
                         </div>
                     </div>
@@ -220,94 +220,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Razón Social</label>
-                            <input type="text" name="razon_social" class="form-control" placeholder="Nombre completo o Empresa" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">RFC</label>
-                            <input type="text" name="r_f_c" class="form-control" placeholder="RFC del cliente" required>
-                        </div>
-                        <div class="col-md-8">
-                            <label class="form-label">Domicilio del Cliente</label>
-                            <input type="text" name="domicilio_del_cliente" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Teléfono</label>
-                            <input type="text" name="telefono_del__cliente" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Correo Electrónico</label>
-                            <input type="email" name="correo_del_cliente" class="form-control" required>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Fecha de Inicio</label>
-                            <input type="date" name="fecha_de_inicio_del_servicio" class="form-control" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Fecha de Conclusión</label>
-                            <input type="date" name="fecha_de_conclusion_del_servicio" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Monto (Sin IVA)</label>
-                            <input type="text" name="monto_de_la_operacion_Sin_IVA" class="form-control" placeholder="Ej. 50000.00" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Forma de Pago</label>
-                            <input type="text" name="forma_de_pago" class="form-control" placeholder="Transferencia/Efectivo">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Cantidad</label>
-                            <input type="number" name="cantidad" class="form-control">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Unidad</label>
-                            <input type="text" name="unidad" class="form-control" placeholder="Pza/Servicio">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Nombre de quien firma</label>
-                            <input type="text" name="nombre_completo_de_la_persona_que_firma_la_solicitud" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Cargo</label>
-                            <input type="text" name="cargo_de_la_persona_que_firma_la_solicitud" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Imagen de Firma (PNG/JPG)</label>
-                            <input type="file" name="imagen_usuario" class="form-control" accept="image/*">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Fecha de Operación</label>
-                            <input type="date" name="fecha_de_operación" class="form-control">
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Factura Relacionada</label>
-                            <input type="text" name="factura_relacionada_con_la_operación" class="form-control">
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Evidencia (Fotos/Videos)</label>
-                            <input type="text" name="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" class="form-control" placeholder="Describa la evidencia disponible">
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Comentarios Adicionales</label>
-                            <textarea name="comentarios" class="form-control" rows="2"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 d-grid">
-                        <button type="submit" class="btn btn-success btn-lg">Generar y Enviar Documentos</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        {% else %}
-        <div class="alert alert-danger">Debes iniciar sesión para ver este formulario.</div>
-        {% endif %}
-    </section>
-
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+                        <footer class="bg-dark text-white text-center py-4 mt-5">
         <p class="mb-0">&copy; 2024 Portal de Gestión de Contratos. Todos los derechos reservados.</p>
     </footer>
 
