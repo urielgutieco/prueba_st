@@ -174,7 +174,7 @@ def logout():
 # OBSERVACIÓN: RUTA DE GENERACIÓN DE DOCUMENTOS (CORE)
 # ================================================================
 @app.route('/generate-word', methods=['POST'])
-@login_required
+#@login_required
 def generate_word():
     try:
         data = request.form.to_dict()
