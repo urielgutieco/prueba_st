@@ -2,6 +2,7 @@ import os
 import io
 import zipfile
 import random
+import re
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -49,7 +50,6 @@ login_manager.login_view = 'login'
 # ================================================================
 # OBSERVACIÓN: GESTIÓN DE DIRECTORIOS
 # ================================================================
-# Usar rutas absolutas basadas en la ubicación del script
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 TEMPLATE_FOLDER = os.path.join(BASE_DIR, 'template_word')
 TMP_DIR = '/tmp'
@@ -59,7 +59,7 @@ os.makedirs(TMP_DIR, exist_ok=True)
 # OBSERVACIÓN: MODELO DE USUARIO
 # ================================================================
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(int, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     is_active = db.Column(db.Boolean, default=True) 
@@ -102,20 +102,30 @@ SERVICIO_TO_DIR = {
 TEMPLATE_FILES = ['plantilla_solicitud.docx', '2.docx', '3.docx', '4.docx', '1.docx']
 
 # ================================================================
+# UTILERÍA: LIMPIEZA DE CARACTERES
+# ================================================================
+def sanitize_filename(name):
+    return re.sub(r'[\\/*?:"<>|]', "", name)
+
+# ================================================================
 # OBSERVACIÓN: LÓGICA DE PROCESAMIENTO WORD
 # ================================================================
 def replace_text_in_document(document, replacements):
     for paragraph in document.paragraphs:
         for key, value in replacements.items():
             if key in paragraph.text:
-                paragraph.text = paragraph.text.replace(key, str(value))
+                # Se asegura que el valor sea string y no contenga caracteres de control
+                clean_value = str(value).encode('ascii', 'ignore').decode('ascii')
+                paragraph.text = paragraph.text.replace(key, clean_value)
+    
     for table in document.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
                     for key, value in replacements.items():
                         if key in paragraph.text:
-                            paragraph.text = paragraph.text.replace(key, str(value))
+                            clean_value = str(value).encode('ascii', 'ignore').decode('ascii')
+                            paragraph.text = paragraph.text.replace(key, clean_value)
 
 def generate_single_document(template_filename, template_root, replacements, user_image_path=None, data=None):
     template_path = os.path.join(template_root, template_filename)
@@ -195,12 +205,12 @@ def generate_word():
 
         template_root = os.path.join(TEMPLATE_FOLDER, carpeta_servicio)
         numero_contrato = ''.join([str(random.randint(0, 9)) for _ in range(18)])
-        rfc_cliente = data.get('r_f_c', 'N/A')
+        rfc_cliente = sanitize_filename(data.get('r_f_c', 'NA'))
 
         replacements = {
             '${descripcion_del_servicio}': servicio,
             '${razon_social}': data.get('razon_social', 'N/A'),
-            '${r_f_c}': rfc_cliente,
+            '${r_f_c}': data.get('r_f_c', 'N/A'),
             '${domicilio_del_cliente}': data.get('domicilio_del_cliente', 'N/A'),
             '${telefono_del_cliente}': data.get('telefono_del_cliente', 'N/A'),
             '${correo_del_cliente}': data.get('correo_del_cliente', 'N/A'),
@@ -222,6 +232,7 @@ def generate_word():
         zip_buffer = io.BytesIO()
         files_added = 0
 
+        # Bloque WITH garantiza que el ZIP se cierre y se escriba correctamente
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             for template in TEMPLATE_FILES:
                 try:
@@ -229,12 +240,13 @@ def generate_word():
                     base_name = os.path.splitext(template)[0]
                     filename = f"{base_name}_{numero_contrato}_{rfc_cliente}.docx"
                     zip_file.writestr(filename, doc_buf.getvalue())
+                    doc_buf.close() # Liberar memoria del documento individual
                     files_added += 1
                 except Exception as e:
                     print(f"Error procesando {template} en {template_root}: {e}")
 
         if files_added == 0:
-            return jsonify({"error": "No se pudo generar ningún documento. Verifique las plantillas."}), 500
+            return jsonify({"error": "No se generaron documentos"}), 500
 
         zip_buffer.seek(0)
         zip_content = zip_buffer.getvalue()
@@ -253,7 +265,7 @@ def generate_word():
         except Exception as mail_err:
             print(f"Error enviando correo: {mail_err}")
 
-        # Reiniciar el buffer para enviarlo como descarga
+        # Retornar el archivo para descarga inmediata
         zip_buffer.seek(0)
         return send_file(
             zip_buffer,
