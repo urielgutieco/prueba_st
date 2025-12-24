@@ -1,0 +1,41 @@
+{
+  "name": "renderstrat_1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/urielgutieco/strat_render.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/urielgutieco/strat_render/issues"
+  },
+  "homepage": "https://github.com/urielgutieco/strat_render#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "docxtemplater": "^3.67.6",
+    "docxtemplater-image-module-free": "^1.1.1",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "jszip": "^3.10.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.12",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
+    "pizzip": "^3.2.0",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {}
+}
