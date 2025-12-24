@@ -123,14 +123,15 @@
         }
 
         /* Botón de salida con colores rojizos para advertir la acción */
-        .btn-logout {
+        #logout-btn {
             margin-top: 20px;
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: var(--text-dim);
+            display: none; /* Oculto inicialmente */
         }
 
-        .btn-logout:hover {
+        #logout-btn:hover {
             background: rgba(239, 68, 68, 0.1);
             color: #fca5a5;
             border-color: #fca5a5;
@@ -144,8 +145,8 @@
             text-align: center;
         }
 
-        /* Oculta el formulario y el botón de salida al cargar la página por primera vez */
-        #form-solicitud, #logout-btn {
+        /* Oculta el formulario al cargar la página por primera vez */
+        #form-solicitud {
             display: none;
         }
     </style>
@@ -170,160 +171,152 @@
         </div>
 
         <div id="form-solicitud" class="card">
-      <h2>Generar registro.</h2>
-      <p style="text-align:center;"></p>
-      <div id="response-message" class="message" style="display: none;"></div>
+            <h2>Generar registro.</h2>
+            <p style="text-align:center;">Complete los campos a continuación</p>
 
-      <form id="solicitudForm" enctype="multipart/form-data">
+            <form id="solicitudForm" enctype="multipart/form-data">
 
-        <div class="form-group">
-          <label for="servicio">Selecciona un servicio (*)</label>
-          <select id="servicio" name="servicio" required>
-            <option value="" disabled selected>--- Elige una opción ---</option>
-            <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
-            <option value="Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares">Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares</option>
-            <option value="Servicio de remodelacion general de viviendas unifamiliares">Servicio de remodelacion general de viviendas unifamiliares</option>
-            <option value="Servicios de reparacion de casas moviles en el sitio">Servicios de reparacion de casas moviles en el sitio</option>
-            <option value="Servicios de construccion y reparacion de patios y terrazas">Servicios de construccion y reparacion de patios y terrazas</option>
-            <option value="Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares">Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares</option>
-            <option value="Servicio de construccion de casas unifamiliares nuevas">Servicio de construccion de casas unifamiliares nuevas</option>
-            <option value="Servicio de instalacion de casas unifamiliares prefabricadas">Servicio de instalacion de casas unifamiliares prefabricadas</option>
-            <option value="Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas">Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas</option>
-            <option value="Dasarrollo urbano">Dasarrollo urbano</option>
-            <option value="Servicio de planificacion de la ordenacion urbana">Servicio de planificacion de la ordenacion urbana</option>
-            <option value="Servicio de administracion de tierras urbanas">Servicio de administracion de tierras urbanas</option>
-            <option value="Servicio de programacion de inversiones urbanas">Servicio de programacion de inversiones urbanas</option>
-            <option value="Servicio de reestructuracion de barrios marginales">Servicio de reestructuracion de barrios marginales</option>
-            <option value="Servicios de alumbrado urbano">Servicios de alumbrado urbano</option>
-            <option value="Servicios de control o regulacion del desarrollo urbano">Servicios de control o regulacion del desarrollo urbano</option>
-            <option value="Servicios de estandares o regulacion de edificios urbanos">Servicios de estandares o regulacion de edificios urbanos</option>
-            <option value="Servicios comunitarios urbanos">Servicios comunitarios urbanos</option>
-            <option value="Servicios de administracion o gestion de proyectos o programas urbanos">Servicios de administracion o gestion de proyectos o programas urbanos</option>
-            <option value="Ingenieria civil">Ingenieria civil</option>
-            <option value="Ingenieria de carreteras">Ingenieria de carreteras</option>
-            <option value="Ingenieria deinfraestructura de instalaciones o fabricas">Ingenieria deinfraestructura de instalaciones o fabricas</option>
-            <option value="Servicios de mantenimiento e instalacion de equipo pesado">Servicios de mantenimiento e instalacion de equipo pesado</option>
-            <option value="Servicio de mantenimiento y reparacion de equipo pesado">Servicio de mantenimiento y reparacion de equipo pesado</option>
-          </select>
-          <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
+                <div class="form-group">
+                    <label for="servicio">Selecciona un servicio (*)</label>
+                    <select id="servicio" name="servicio" required onchange="document.getElementById('descripcion_del_servicio').value = this.value">
+                        <option value="" disabled selected>--- Elige una opción ---</option>
+                        <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
+                        <option value="Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares">Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares</option>
+                        <option value="Servicio de remodelacion general de viviendas unifamiliares">Servicio de remodelacion general de viviendas unifamiliares</option>
+                        <option value="Servicios de reparacion de casas moviles en el sitio">Servicios de reparacion de casas moviles en el sitio</option>
+                        <option value="Servicios de construccion y reparacion de patios y terrazas">Servicios de construccion y reparacion de patios y terrazas</option>
+                        <option value="Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares">Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares</option>
+                        <option value="Servicio de construccion de casas unifamiliares nuevas">Servicio de construccion de casas unifamiliares nuevas</option>
+                        <option value="Servicio de instalacion de casas unifamiliares prefabricadas">Servicio de instalacion de casas unifamiliares prefabricadas</option>
+                        <option value="Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas">Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas</option>
+                        <option value="Dasarrollo urbano">Dasarrollo urbano</option>
+                        <option value="Servicio de planificacion de la ordenacion urbana">Servicio de planificacion de la ordenacion urbana</option>
+                        <option value="Servicio de administracion de tierras urbanas">Servicio de administracion de tierras urbanas</option>
+                        <option value="Servicio de programacion de inversiones urbanas">Servicio de programacion de inversiones urbanas</option>
+                        <option value="Servicio de reestructuracion de barrios marginales">Servicio de reestructuracion de barrios marginales</option>
+                        <option value="Servicios de alumbrado urbano">Servicios de alumbrado urbano</option>
+                        <option value="Servicios de control o regulacion del desarrollo urbano">Servicios de control o regulacion del desarrollo urbano</option>
+                        <option value="Servicios de estandares o regulacion de edificios urbanos">Servicios de estandares o regulacion de edificios urbanos</option>
+                        <option value="Servicios comunitarios urbanos">Servicios comunitarios urbanos</option>
+                        <option value="Servicios de administracion o gestion de proyectos o programas urbanos">Servicios de administracion o gestion de proyectos o programas urbanos</option>
+                        <option value="Ingenieria civil">Ingenieria civil</option>
+                        <option value="Ingenieria de carreteras">Ingenieria de carreteras</option>
+                        <option value="Ingenieria deinfraestructura de instalaciones o fabricas">Ingenieria deinfraestructura de instalaciones o fabricas</option>
+                        <option value="Servicios de mantenimiento e instalacion de equipo pesado">Servicios de mantenimiento e instalacion de equipo pesado</option>
+                        <option value="Servicio de mantenimiento y reparacion de equipo pesado">Servicio de mantenimiento y reparacion de equipo pesado</option>
+                    </select>
+                    <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
+                </div>
+
+                <div class="form-group">
+                    <label for="razon_social">Razón Social (*)</label>
+                    <input type="text" id="razon_social" name="razon_social" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="r_f_c">R.F.C (*)</label>
+                    <input type="text" id="r_f_c" name="r_f_c" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="domicilio_del_cliente">Domicilio del Cliente</label>
+                    <input type="text" id="domicilio_del_cliente" name="domicilio_del_cliente">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono_del_cliente">Teléfono del Cliente</label>
+                    <input type="tel" id="telefono_del_cliente" name="telefono_del_cliente">
+                </div>
+
+                <div class="form-group">
+                    <label for="correo_del_cliente">Correo del Cliente (*)</label>
+                    <input type="email" id="correo_del_cliente" name="correo_del_cliente" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha_de_operacion">Fecha de Operacion</label>
+                    <input type="date" id="fecha_de_operacion" name="fecha_de_operacion">
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha_de_inicio_del_servicio">Fecha de Inicio Estimada</label>
+                    <input type="date" id="fecha_de_inicio_del_servicio" name="fecha_de_inicio_del_servicio">
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha_de_conclusion_del_servicio">Fecha de Conclusión Estimada</label>
+                    <input type="date" id="fecha_de_conclusion_del_servicio" name="fecha_de_conclusion_del_servicio">
+                </div>
+
+                <div class="form-group">
+                    <label for="monto_de_la_operacion_sin_iva">Monto de la Operación (Sin IVA) (*)</label>
+                    <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="forma_de_pago">Forma de Pago</label>
+                    <input type="text" id="forma_de_pago" name="forma_de_pago">
+                </div>
+
+                <div class="form-group">
+                    <label for="cantidad">Cantidad de Unidades</label>
+                    <input type="number" id="cantidad" name="cantidad" step="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="numero_de_contrato">Número de Contrato</label>
+                    <input type="text" id="numero_de_contrato" name="numero_de_contrato">
+                </div>
+
+                <div class="form-group">
+                    <label for="unidad">Unidad de Medida (Ej: Servicio, Hora, Documento)</label>
+                    <input type="text" id="unidad" name="unidad">
+                </div>
+
+                <div class="form-group">
+                    <label for="factura_relacionada_con_la_operacion">Factura Relacionada con la Operación</label>
+                    <input type="text" id="factura_relacionada_con_la_operacion" name="factura_relacionada_con_la_operacion">
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Nombre Completo de la Persona que Firma (*)</label>
+                    <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cargo_de_la_persona_que_firma_la_solicitud">Cargo de la Persona que Firma</label>
+                    <input type="text" id="cargo_de_la_persona_que_firma_la_solicitud" name="cargo_de_la_persona_que_firma_la_solicitud">
+                </div>
+
+                <div class="form-group">
+                    <label for="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion">¿Cuenta con fotografías, videos o información adicional? (Describa)</label>
+                    <textarea id="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" name="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="comentarios">Comentarios Finales (Observaciones, notas)</label>
+                    <textarea id="comentarios" name="comentarios" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagen_usuario">Cargar imagen para insertar en Word</label>
+                    <input type="file" id="imagen_usuario" name="imagen_usuario" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn-submit">Generar Solicitud y Descargar Word</button>
+
+            </form>
         </div>
 
-        <div class="form-group">
-          <label for="razon_social">Razón Social (*)</label>
-          <input type="text" id="razon_social" name="razon_social" required>
-        </div>
-
-        <div class="form-group">
-          <label for="r_f_c">R.F.C (*)</label>
-          <input type="text" id="r_f_c" name="r_f_c" required>
-        </div>
-
-        <div class="form-group">
-          <label for="domicilio_del_cliente">Domicilio del Cliente</label>
-          <input type="text" id="domicilio_del_cliente" name="domicilio_del_cliente">
-        </div>
-
-        <div class="form-group">
-          <label for="telefono_del_cliente">Teléfono del Cliente</label>
-          <input type="tel" id="telefono_del_cliente" name="telefono_del_cliente">
-        </div>
-
-        <div class="form-group">
-          <label for="correo_del_cliente">Correo del Cliente (*)</label>
-          <input type="email" id="correo_del_cliente" name="correo_del_cliente" required>
-        </div>
-
-        <div class="form-group">
-          <label for="fecha_de_operacion">Fecha de Operacion</label>
-          <input type="date" id="fecha_de_operacion" name="fecha_de_operacion">
-        </div>
-
-        <div class="form-group">
-          <label for="fecha_de_inicio_del_servicio">Fecha de Inicio Estimada</label>
-          <input type="date" id="fecha_de_inicio_del_servicio" name="fecha_de_inicio_del_servicio">
-        </div>
-
-        <div class="form-group">
-          <label for="fecha_de_conclusion_del_servicio">Fecha de Conclusión Estimada</label>
-          <input type="date" id="fecha_de_conclusion_del_servicio" name="fecha_de_conclusion_del_servicio">
-        </div>
-
-        <div class="form-group">
-          <label for="monto_de_la_operacion_sin_iva">Monto de la Operación (Sin IVA) (*)</label>
-          <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" required>
-        </div>
-
-        <div class="form-group">
-          <label for="forma_de_pago">Forma de Pago</label>
-          <input type="text" id="forma_de_pago" name="forma_de_pago">
-        </div>
-
-        <div class="form-group">
-          <label for="cantidad">Cantidad de Unidades</label>
-          <input type="number" id="cantidad" name="cantidad" step="1">
-        </div>
-
-        <div class="form-group">
-          <label for="numero_de_contrato">Número de Contrato</label>
-          <input type="text" id="numero_de_contrato" name="numero_de_contrato">
-        </div>
-
-        <div class="form-group">
-          <label for="unidad">Unidad de Medida (Ej: Servicio, Hora, Documento)</label>
-          <input type="text" id="unidad" name="unidad">
-        </div>
-
-        <div class="form-group">
-          <label for="factura_relacionada_con_la_operacion">Factura Relacionada con la Operación</label>
-          <input type="text" id="factura_relacionada_con_la_operacion" name="factura_relacionada_con_la_operacion">
-        </div>
-
-        <div class="form-group">
-          <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Nombre Completo de la Persona que Firma (*)</label>
-          <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" required>
-        </div>
-
-        <div class="form-group">
-          <label for="cargo_de_la_persona_que_firma_la_solicitud">Cargo de la Persona que Firma</label>
-          <input type="text" id="cargo_de_la_persona_que_firma_la_solicitud" name="cargo_de_la_persona_que_firma_la_solicitud">
-        </div>
-
-        <div class="form-group">
-          <label for="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion">¿Cuenta con fotografías, videos o información adicional? (Describa)</label>
-          <textarea id="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" name="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" rows="2"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="comentarios">Comentarios Finales (Observaciones, notas)</label>
-          <textarea id="comentarios" name="comentarios" rows="3"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="imagen_usuario">Cargar imagen para insertar en Word</label>
-          <input type="file" id="imagen_usuario" name="imagen_usuario" accept="image/*">
-        </div>
-
-        <button type="submit" class="btn-submit">Generar Solicitud y Descargar Word</button>
-
-      </form>
+        <button id="logout-btn" onclick="logout()">
+            Cerrar sesión
+        </button>
     </div>
-
-    <button id="logout-btn" onclick="logout()">
-      Cerrar sesión
-    </button>
-    </div>
-
-    <button id="back-btn" onclick="regresar()">
-  Volver atrás
-</button>
-</div>
-
 
     <script>
         /**
          * Función: login()
-         * Uso: Valida el acceso del usuario.
-         * Lógica: Si el usuario es 'uriel' y el pass es '123456', intercambia las vistas de Login y Formulario.
+         * Uso: Valida el acceso del usuario y cambia la vista.
          */
         function login() {
             const userInp = document.getElementById('user').value;
@@ -333,9 +326,11 @@
 
             // Credenciales solicitadas
             if (userInp === "uriel" && passInp === "123456") {
-                // Ocultar login, mostrar cuestionario mediante manipulación de estilo inline
+                // Ocultar login
                 document.getElementById('login-section').style.display = 'none';
+                // Mostrar formulario y botón logout
                 document.getElementById('form-solicitud').style.display = 'block';
+                document.getElementById('logout-btn').style.display = 'block';
                 // Cambia el ancho del contenedor para el formulario
                 container.classList.add('dashboard-mode');
                 errorDiv.textContent = "";
@@ -346,8 +341,7 @@
 
         /**
          * Función: logout()
-         * Uso: Regresa al estado inicial.
-         * Lógica: Recarga la página por completo, lo que resetea variables y vistas.
+         * Regresa al estado inicial recargando la página.
          */
         function logout() {
             location.reload();
@@ -355,14 +349,11 @@
 
         /**
          * Manejador de Formulario: onsubmit
-         * Uso: Procesa los datos del formulario al enviarse.
-         * Lógica: e.preventDefault() evita el envío por defecto para permitir manejo con JavaScript.
          */
         document.getElementById('solicitudForm').onsubmit = function(e) {
             e.preventDefault();
             // Notificación visual de éxito simulado
             alert("Simulación: Generando archivo Word con los datos de " + document.getElementById('razon_social').value);
-            // Aquí se conectaría con la API o librería para generar el documento Word.
         };
     </script>
 </body>

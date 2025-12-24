@@ -92,7 +92,10 @@
 </style>
 
 </head>
-<body x-data="{ section: 'inicio', isAuthenticated: {{ 'true' if current_user.is_authenticated else 'false' }} }">
+<body x-data="{ 
+    section: '{{ 'formulario' if current_user.is_authenticated else 'inicio' }}', 
+    isAuthenticated: {{ 'true' if current_user.is_authenticated else 'false' }} 
+}">
 
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
@@ -127,7 +130,7 @@
         {% endwith %}
     </div>
 
-    <section x-show="section === 'inicio'">
+    <section x-show="section === 'inicio'" x-cloak>
         <div class="hero-section text-center">
             <div class="container">
                 <h1 class="display-4 fw-bold">Soluciones Profesionales en Construcción</h1>
@@ -218,6 +221,12 @@
                 </form>
             </div>
         </div>
+        {% else %}
+            <div class="text-center">
+                <h3>Acceso restringido</h3>
+                <p>Por favor, inicie sesión para acceder a esta sección.</p>
+                <button @click="section = 'login'" class="btn btn-primary">Ir al Login</button>
+            </div>
         {% endif %}
     </section>
 
@@ -230,9 +239,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const isAuthenticated = {{ current_user.is_authenticated | tojson }};
-            if (isAuthenticated) { 
-                // tu código adicional aquí
-            }
+            // Si el usuario acaba de loguearse, el estado de Alpine ya lo maneja
+            // a través de la variable 'section' inicializada arriba.
         });
     </script>
 </body>
