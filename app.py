@@ -13,8 +13,6 @@ from docx.shared import Inches
 
 # ================================================================
 # OBSERVACIÓN: INICIALIZACIÓN DE LA APLICACIÓN
-# Este bloque configura Flask, habilita CORS para peticiones externas
-# y define la clave secreta para el manejo de sesiones seguras.
 # ================================================================
 app = Flask(__name__)
 CORS(app)
@@ -24,8 +22,6 @@ app.config['SECRET_KEY'] = os.environ.get("SESSION_SECRET", "una_clave_muy_segur
 
 # ================================================================
 # OBSERVACIÓN: CONFIGURACIÓN DE BASE DE DATOS
-# Define la conexión a SQLite (local) o PostgreSQL (producción).
-# Incluye un ajuste automático para protocolos de SQLAlchemy en Heroku/Render.
 # ================================================================
 db_url = os.environ.get("DATABASE_URL", "sqlite:///usuarios.db")
 if db_url.startswith("postgres://"):
@@ -37,8 +33,6 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"pool_pre_ping": True}
 
 # ================================================================
 # OBSERVACIÓN: CONFIGURACIÓN DE CORREO (Flask-Mail)
-# Utiliza el servidor SMTP de Gmail para enviar las notificaciones.
-# Las credenciales se obtienen de variables de entorno por seguridad.
 # ================================================================
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -54,8 +48,6 @@ login_manager.login_view = 'login'
 
 # ================================================================
 # OBSERVACIÓN: GESTIÓN DE DIRECTORIOS
-# Crea automáticamente las carpetas necesarias para plantillas y 
-# archivos temporales si no existen al iniciar la app.
 # ================================================================
 TEMPLATE_FOLDER = 'template_word'
 TMP_DIR = '/tmp'
@@ -64,8 +56,6 @@ for folder in [TEMPLATE_FOLDER, TMP_DIR]:
 
 # ================================================================
 # OBSERVACIÓN: MODELO DE USUARIO
-# Define la estructura de la tabla de usuarios en la base de datos:
-# ID, nombre de usuario, contraseña (hash), estatus y rol de admin.
 # ================================================================
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -80,8 +70,6 @@ def load_user(user_id):
 
 # ================================================================
 # OBSERVACIÓN: MAPEO DE SERVICIOS
-# Diccionario que vincula el nombre comercial del servicio con el 
-# nombre de la subcarpeta física donde residen sus plantillas.
 # ================================================================
 SERVICIO_TO_DIR = {
     "Servicios de construccion de unidades unifamiliares": "construccion_unifamiliar",
@@ -114,9 +102,6 @@ TEMPLATE_FILES = ['plantilla_solicitud.docx', '2.docx', '3.docx', '4.docx', '1.d
 
 # ================================================================
 # OBSERVACIÓN: LÓGICA DE PROCESAMIENTO WORD
-# Estas funciones buscan etiquetas tipo ${variable} en párrafos y
-# tablas del documento Word para reemplazarlas con datos reales.
-# Además, inserta la imagen de la firma al final del documento.
 # ================================================================
 def replace_text_in_document(document, replacements):
     for paragraph in document.paragraphs:
@@ -154,8 +139,6 @@ def generate_single_document(template_filename, template_root, replacements, use
 
 # ================================================================
 # OBSERVACIÓN: RUTAS DE NAVEGACIÓN Y CONTROL DE ACCESO
-# Gestiona el formulario principal, el inicio de sesión del usuario,
-# el cierre de sesión y la vista de administración.
 # ================================================================
 
 @app.route('/')
@@ -181,13 +164,6 @@ def login():
         flash("Usuario o contraseña incorrectos")
     return render_template('login.html')
 
-@app.route('/superadmin')
-@login_required
-def superadmin():
-    if not current_user.is_admin:
-        return redirect(url_for('formulario'))
-    return render_template('superadmin.html')
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -196,12 +172,6 @@ def logout():
 
 # ================================================================
 # OBSERVACIÓN: RUTA DE GENERACIÓN DE DOCUMENTOS (CORE)
-# Esta es la función principal que:
-# 1. Recibe los datos del formulario y la imagen de firma.
-# 2. Genera los 5 documentos Word basados en las plantillas.
-# 3. Comprime los archivos en un solo archivo .ZIP.
-# 4. Envía dicho ZIP por correo a los destinatarios configurados.
-# 5. Descarga el ZIP automáticamente en el navegador del usuario.
 # ================================================================
 @app.route('/generate-word', methods=['POST'])
 @login_required
@@ -237,7 +207,7 @@ def generate_word():
             '${monto_de_la_operacion_Sin_IVA}': data.get('monto_de_la_operacion_Sin_IVA', 'N/A'),
             '${forma_de_pago}': data.get('forma_de_pago', 'N/A'),
             '${cantidad}': data.get('cantidad', 'N/A'),
-            '${unidad}': data.get('unidad', 'N/A'),
+            '${symbol}': data.get('unidad', 'N/A'),
             '${numero_de_contrato}': numero_contrato,
             '${fecha_de_operación}': data.get('fecha_de_operación', 'N/A'),
             '${nombre_completo_de_la_persona_que_firma_la_solicitud}': data.get('nombre_completo_de_la_persona_que_firma_la_solicitud', 'N/A'),
@@ -287,8 +257,6 @@ def generate_word():
 
 # ================================================================
 # OBSERVACIÓN: INICIALIZACIÓN Y EJECUCIÓN
-# Crea las tablas de la DB al arrancar y genera un usuario admin 
-# por defecto si la base de datos está vacía.
 # ================================================================
 with app.app_context():
     db.create_all()
