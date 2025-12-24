@@ -3,6 +3,7 @@ import io
 import zipfile
 import random
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, jsonify
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -239,6 +240,24 @@ def generate_word():
 
     except Exception as e:
         return jsonify({"error": f"Error interno: {str(e)}"}), 500
+    
+    # Ruta para la página de inicio y servicios
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# Ruta para el login
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+# Ruta para el panel de superadmin
+@app.route('/superadmin')
+def superadmin():
+    return render_template('superadmin.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 # --- INICIALIZACIÓN ---
 if __name__ == "__main__":
