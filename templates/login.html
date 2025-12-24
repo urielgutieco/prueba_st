@@ -152,8 +152,22 @@
 </head>
 
 <body>
-<div id="main-container" class="container">
-    <div id="login-section" class="card">
+    <div class="container" id="main-container">
+        
+        <div id="login-section" class="card">
+            <h1>SuperAdmin</h1>
+            <p>Acceso restringido</p>
+
+            <div class="form-group">
+                <input id="user" placeholder="Usuario">
+            </div>
+            <div class="form-group">
+                <input id="password" type="password" placeholder="Password">
+            </div>
+
+            <button onclick="login()">Ingresar</button>
+            <div class="error" id="error"></div>
+        </div>
 
         <div id="form-solicitud" class="card">
       <h2>Generar registro.</h2>
@@ -300,9 +314,9 @@
     </div>
 
     <button id="back-btn" onclick="regresar()">
-         Volver atrás
-    </button>
-    </div>
+  Volver atrás
+</button>
+</div>
 
 
     <script>
