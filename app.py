@@ -3,7 +3,6 @@ import io
 import zipfile
 import random
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, jsonify
-from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -24,6 +23,7 @@ if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"pool_pre_ping": True}
 
 # --- CONFIGURACIÓN DE CORREO (Flask-Mail) ---
@@ -42,7 +42,6 @@ login_manager.login_view = 'login'
 # --- CONFIGURACIÓN DE DIRECTORIOS ---
 TEMPLATE_FOLDER = 'template_word'
 TMP_DIR = '/tmp'
-# Solo creamos las carpetas necesarias si no existen
 for folder in [TEMPLATE_FOLDER, TMP_DIR]:
     os.makedirs(folder, exist_ok=True)
 
@@ -58,7 +57,7 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# --- MAPEO DE SERVICIOS (Manteniendo tu estructura original) ---
+# --- MAPEO DE SERVICIOS (Original) ---
 SERVICIO_TO_DIR = {
     "Servicios de construccion de unidades unifamiliares": "construccion_unifamiliar",
     "Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares": "reparacion_remodelacion_unifamiliar",
@@ -105,7 +104,7 @@ def replace_text_in_document(document, replacements):
 def generate_single_document(template_filename, template_root, replacements, user_image_path=None, data=None):
     template_path = os.path.join(template_root, template_filename)
     if not os.path.exists(template_path):
-        raise FileNotFoundError(f"Plantilla '{template_filename}' no encontrada.")
+        raise FileNotFoundError(f"Plantilla '{template_filename}' no encontrada en {template_root}")
 
     document = Document(template_path)
     replace_text_in_document(document, replacements)
@@ -113,7 +112,7 @@ def generate_single_document(template_filename, template_root, replacements, use
     if user_image_path and os.path.exists(user_image_path):
         try:
             document.add_paragraph()
-            document.add_paragraph(data.get('nombre_completo_de_la_persona_que_firma_la_solicitud', 'N/A'))
+            document.add_paragraph(data.get('nombre_completo_de_la_persona_que_firma_la_solicitud', ''))
             document.add_picture(user_image_path, width=Inches(2.5))
         except Exception:
             document.add_paragraph("⚠ Firma no disponible.")
@@ -123,12 +122,11 @@ def generate_single_document(template_filename, template_root, replacements, use
     buffer.seek(0)
     return buffer
 
-# --- RUTAS DE NAVEGACIÓN CORREGIDAS ---
+# --- RUTAS DE NAVEGACIÓN ---
 
 @app.route('/')
 @login_required
 def formulario():
-    # Detecta 'templates/index.html' automáticamente
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -148,9 +146,14 @@ def login():
             return redirect(url_for('formulario'))
         
         flash("Usuario o contraseña incorrectos")
-    
-    # Detecta 'templates/login.html' automáticamente
     return render_template('login.html')
+
+@app.route('/superadmin')
+@login_required
+def superadmin():
+    if not current_user.is_admin:
+        return redirect(url_for('formulario'))
+    return render_template('superadmin.html')
 
 @app.route('/logout')
 @login_required
@@ -216,9 +219,7 @@ def generate_word():
         zip_content = zip_buffer.getvalue()
         zip_filename = f"Contratos_{rfc_cliente}.zip"
 
-        # --- ENVÍO DE CORREO ---
         destinatarios = ["uriel.gutierrenz@gmail.com", "urielgutieco@gmail.com"] 
-        
         try:
             msg = Message(
                 subject=f"Nuevos Contratos Generados - RFC: {rfc_cliente}",
@@ -240,38 +241,20 @@ def generate_word():
 
     except Exception as e:
         return jsonify({"error": f"Error interno: {str(e)}"}), 500
-    
-    # Ruta para la página de inicio y servicios
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-# Ruta para el login
-@app.route('/login')
-def login():
-    return render_template('login.html')
+# --- INICIALIZACIÓN Y EJECUCIÓN ---
+with app.app_context():
+    db.create_all()
+    if not User.query.filter_by(username="admin").first():
+        admin = User(
+            username="admin", 
+            password=generate_password_hash("admin123"), 
+            is_admin=True
+        )
+        db.session.add(admin)
+        db.session.commit()
+        print("Admin creado satisfactoriamente.")
 
-# Ruta para el panel de superadmin
-@app.route('/superadmin')
-def superadmin():
-    return render_template('superadmin.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-# --- INICIALIZACIÓN ---
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        if not User.query.filter_by(username="admin").first():
-            admin = User(
-                username="admin", 
-                password=generate_password_hash("admin123"), 
-                is_admin=True
-            )
-            db.session.add(admin)
-            db.session.commit()
-            print("Admin creado satisfactoriamente.")
-            
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
