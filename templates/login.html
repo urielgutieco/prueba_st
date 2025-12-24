@@ -7,95 +7,140 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-    :root {
-        /* Paleta de colores basada en la imagen */
-        --bg-dark: #050a12;
-        --accent-blue: #2563eb;
-        --accent-yellow: #facc15;
-        --text-main: #ffffff;
-        --text-dim: #94a3b8;
-        --card-bg: rgba(255, 255, 255, 0.05);
-        --border-color: rgba(255, 255, 255, 0.1);
-    }
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+            --bg-dark: #020617;
+            --card-bg: rgba(255, 255, 255, .06);
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+        }
 
-    body {
-        background-color: var(--bg-dark);
-        color: var(--text-main);
-        font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-        margin: 0;
-    }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top, #1e1b4b, var(--bg-dark));
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-    /* Navegación transparente y moderna */
-    .navbar {
-        background-color: rgba(5, 10, 18, 0.8);
-        backdrop-filter: blur(10px);
-        padding: 20px 0;
-    }
+        /* Contenedores Principales */
+        .container {
+            width: 100%;
+            max-width: 450px;
+            transition: max-width 0.3s ease;
+        }
 
-    /* Sección Hero con el gradiente radial de la imagen */
-    .hero-section {
-        background: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 40%),
-                    linear-gradient(180deg, var(--bg-dark) 0%, #0a1628 100%);
-        padding: 120px 0;
-        min-height: 80vh;
-    }
+        .container.dashboard-mode {
+            max-width: 800px;
+        }
 
-    /* Títulos con el estilo de énfasis (azul y amarillo) */
-    h1 {
-        font-size: 3.5rem;
-        font-weight: 800;
-        line-height: 1.1;
-    }
+        .card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    .text-precision { color: #93c5fd; } /* Azul claro */
-    .text-control { color: var(--accent-yellow); } /* Amarillo */
-    .text-velocity { color: var(--accent-yellow); }
+        h1, h2 {
+            margin: 0 0 10px;
+            font-size: 28px;
+            text-align: center;
+        }
 
-    /* Tarjetas estilo Glassmorphism (Resumen Ejecutivo) */
-    .card {
-        background: var(--card-bg);
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 30px;
-        color: var(--text-main);
-    }
+        p {
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            text-align: center;
+        }
 
-    /* Botón azul principal */
-    .btn-primary {
-        background-color: var(--accent-blue);
-        color: white;
-        border-radius: 12px;
-        padding: 12px 28px;
-        font-weight: 600;
-        border: none;
-        transition: transform 0.2s, background 0.2s;
-    }
+        /* Formulario y Inputs */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
 
-    .btn-primary:hover {
-        background-color: #1d4ed8;
-        transform: translateY(-2px);
-    }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
 
-    /* Botón secundario "Ver solución" */
-    .btn-outline {
-        background: transparent;
-        border: 1px solid var(--border-color);
-        color: white;
-        border-radius: 12px;
-        padding: 12px 28px;
-    }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .15);
+            background: rgba(255, 255, 255, .05);
+            color: white;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+        }
 
-    /* Badges y etiquetas pequeñas */
-    .badge-platform {
-        background: rgba(37, 99, 235, 0.1);
-        border: 1px solid rgba(37, 99, 235, 0.3);
-        color: var(--text-dim);
-        border-radius: 50px;
-        padding: 5px 15px;
-        font-size: 0.85rem;
-    }
-</style>
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, .1);
+        }
+
+        option {
+            background: #1e1b4b;
+            color: white;
+        }
+
+        /* Botones */
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            font-size: 16px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-logout {
+            margin-top: 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-dim);
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border-color: #fca5a5;
+        }
+
+        .error {
+            margin-top: 12px;
+            color: #fca5a5;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Control de vistas */
+        #form-solicitud, #logout-btn {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
