@@ -1,372 +1,352 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Gestión - Strat & Tax</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg: #9c9c9cce;
-            --accent: #323c47;
-            --accent-light: #565758;
-            --muted: #515457;
-            --panel: #ffffff;
-            --border: #70859a;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --radius: 8px;
-            --font-main: "Inter", system-ui, sans-serif;
-            --color-secondary: #d4b537;
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <title>Strat &amp; Tax | Plataforma Fiscal Empresarial</title>
+  <meta name="description" content="Plataforma fiscal empresarial: automatización documental, cumplimiento y trazabilidad sobre AWS.">
 
-        html, body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--accent);
-            font-family: var(--font-main);
-            line-height: 1.6;
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 
-        /* --- Header & Nav --- */
-        header {
-            background: var(--accent);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo-img {
-            height: 50px;
-            width: auto;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-            margin: 0;
-        }
-
-        nav a {
-            color: #ffffffb3;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        nav a:hover { color: #fff; }
-
-        /* --- Hero Section --- */
-        .hero {
-            background: linear-gradient(rgba(50, 60, 71, 0.8), rgba(50, 60, 71, 0.8)), 
-                        url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80') center/cover;
-            color: #fff;
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        /* --- Containers & Cards --- */
-        .container {
-            max-width: 900px;
-            margin: -30px auto 50px;
-            background: var(--panel);
-            padding: 40px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            position: relative;
-        }
-
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-        }
-
-        /* --- Forms --- */
-        .form-group { margin-bottom: 18px; text-align: left; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--accent); }
-        
-        input[type="text"], input[type="password"], input[type="email"], 
-        input[type="number"], input[type="date"], input[type="tel"], 
-        select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-
-        .btn-submit, .btn-login {
-            background: var(--accent);
-            color: white;
-            padding: 14px 20px;
-            border: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .btn-submit:hover { background: var(--accent-light); }
-
-        /* --- Sections Visibility --- */
-        #form-section, #logout-btn-container { display: none; }
-
-        footer {
-            background: var(--accent);
-            color: #c4c1c1;
-            text-align: center;
-            padding: 30px;
-            margin-top: 40px;
-        }
-
-        .error-msg {
-            color: #b71c1c;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-            margin-bottom: 15px;
-        }
-    </style>
+  <link rel="stylesheet" href="style2.css">
 </head>
-
 <body>
-    <header>
-        <div class="header-content">
-            <div class="logo-container">
-                <img src="stratandtax.png" alt="Logo Strat & Tax" class="logo-img">
-            </div>
-            <nav>
-                <ul id="nav-links">
-                    <li><a href="#" onclick="location.reload()">Inicio</a></li>
-                    <li id="logout-btn-container"><a href="#" onclick="logout()">Cerrar Sesión</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
 
-    <section class="hero">
-        <h1 id="hero-title">Acceso al Sistema</h1>
-        <p id="hero-subtitle">Identifíquese para gestionar sus registros fiscales.</p>
-    </section>
+  <div class="fx" aria-hidden="true">
+    <div class="fx-orb fx-orb--1"></div>
+    <div class="fx-orb fx-orb--2"></div>
+    <div class="fx-orb fx-orb--3"></div>
+    <div class="fx-grid"></div>
+    <div class="fx-vignette"></div>
+  </div>
 
-    <div class="container">
-        
-        <div id="login-section">
-            <div class="card" style="max-width: 400px; margin: 0 auto;">
-                <h2 style="text-align:center">Iniciar Sesión</h2>
-                <p id="error-msg" class="error-msg">Usuario o contraseña incorrectos.</p>
-                
-                <div class="form-group">
-                    <label>Usuario</label>
-                    <input type="text" id="usuario" placeholder="Tu usuario">
-                </div>
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="password" placeholder="********">
-                </div>
-                <button class="btn-login" onclick="login()">Entrar</button>
-            </div>
-        </div>
+  <header class="topbar" role="banner">
+    <div class="container topbar__inner">
+      <a class="brand" href="index.html" aria-label="Inicio">
+        <span class="brand__mark" aria-hidden="true">
+          <img class="brand__logo" src="stratandtax.png" alt="" onerror="this.style.display='none'">
+          <span class="brand__fallback">S</span>
+        </span>
+        <span class="brand__meta">
+          <span class="brand__name">STRAT &amp; TAX</span>
+          <span class="brand__tag">Fiscal · Compliance · Automatización</span>
+        </span>
+      </a>
 
-        <div id="form-section">
-            <h2 style="text-align:center; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">Generar Registro de Servicio</h2>
-            
-            <form id="solicitudForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="servicio">Selecciona un servicio (*)</label>
-                    <select id="servicio" name="servicio" required>
-                        <option value="" disabled selected>--- Elige una opción ---</option>
-                        <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
-                        <option value="Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares">Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares</option>
-                        <option value="Servicio de remodelacion general de viviendas unifamiliares">Servicio de remodelacion general de viviendas unifamiliares</option>
-                        <option value="Servicios de reparacion de casas moviles en el sitio">Servicios de reparacion de casas moviles en el sitio</option>
-                        <option value="Servicios de construccion y reparacion de patios y terrazas">Servicios de construccion y reparacion de patios y terrazas</option>
-                        <option value="Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares">Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares</option>
-                        <option value="Servicio de construccion de casas unifamiliares nuevas">Servicio de construccion de casas unifamiliares nuevas</option>
-                        <option value="Servicio de instalacion de casas unifamiliares prefabricadas">Servicio de instalacion de casas unifamiliares prefabricadas</option>
-                        <option value="Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas">Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas</option>
-                        <option value="Dasarrollo urbano">Desarrollo urbano</option>
-                        <option value="Servicio de planificacion de la ordenacion urbana">Servicio de planificacion de la ordenacion urbana</option>
-                        <option value="Servicio de administracion de tierras urbanas">Servicio de administracion de tierras urbanas</option>
-                        <option value="Servicio de programacion de inversiones urbanas">Servicio de programacion de inversiones urbanas</option>
-                        <option value="Servicio de reestructuracion de barrios marginales">Servicio de reestructuracion de barrios marginales</option>
-                        <option value="Servicios de alumbrado urbano">Servicios de alumbrado urbano</option>
-                        <option value="Servicios de control o regulacion del desarrollo urbano">Servicios de control o regulacion del desarrollo urbano</option>
-                        <option value="Servicios de estandares o regulacion de edificios urbanos">Servicios de estandares o regulacion de edificios urbanos</option>
-                        <option value="Servicios comunitarios urbanos">Servicios comunitarios urbanos</option>
-                        <option value="Servicios de administracion o gestion de proyectos o programas urbanos">Servicios de administracion o gestion de proyectos o programas urbanos</option>
-                        <option value="Ingenieria civil">Ingenieria civil</option>
-                        <option value="Ingenieria de carreteras">Ingenieria de carreteras</option>
-                        <option value="Ingenieria deinfraestructura de instalaciones o fabricas">Ingenieria deinfraestructura de instalaciones o fabricas</option>
-                        <option value="Servicios de mantenimiento e instalacion de equipo pesado">Servicios de mantenimiento e instalacion de equipo pesado</option>
-                        <option value="Servicio de mantenimiento y reparacion de equipo pesado">Servicio de mantenimiento y reparacion de equipo pesado</option>
-                    </select>
-                    <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
-                </div>
+      <nav class="nav" aria-label="Navegación principal">
+        <a class="nav__link" href="#solucion">Solución</a>
+        <a class="nav__link" href="#servicios">Servicios</a>
+        <a class="nav__link" href="#proceso">Proceso</a>
+        <a class="nav__link" href="#seguridad">Seguridad</a>
+        <a class="nav__link nav__link--cta" href="contacto.html">Acceso clientes</a>
+      </nav>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="razon_social">Razón Social (*)</label>
-                        <input type="text" id="razon_social" name="razon_social" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="r_f_c">R.F.C (*)</label>
-                        <input type="text" id="r_f_c" name="r_f_c" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="domicilio_del_cliente">Domicilio del Cliente</label>
-                    <input type="text" id="domicilio_del_cliente" name="domicilio_del_cliente">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="telefono_del_cliente">Teléfono del Cliente</label>
-                        <input type="tel" id="telefono_del_cliente" name="telefono_del_cliente">
-                    </div>
-                    <div class="form-group">
-                        <label for="correo_del_cliente">Correo del Cliente (*)</label>
-                        <input type="email" id="correo_del_cliente" name="correo_del_cliente" required>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <label for="fecha_de_operacion">Fecha Operación</label>
-                        <input type="date" id="fecha_de_operacion" name="fecha_de_operacion">
-                    </div>
-                    <div class="form-group">
-                        <label for="fecha_de_inicio_del_servicio">Inicio Estimado</label>
-                        <input type="date" id="fecha_de_inicio_del_servicio" name="fecha_de_inicio_del_servicio">
-                    </div>
-                    <div class="form-group">
-                        <label for="fecha_de_conclusion_del_servicio">Conclusión Estimada</label>
-                        <input type="date" id="fecha_de_conclusion_del_servicio" name="fecha_de_conclusion_del_servicio">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="monto_de_la_operacion_sin_iva">Monto (Sin IVA) (*)</label>
-                        <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="forma_de_pago">Forma de Pago</label>
-                        <input type="text" id="forma_de_pago" name="forma_de_pago">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <label for="cantidad">Cantidad</label>
-                        <input type="number" id="cantidad" name="cantidad" step="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="unidad">Unidad Medida</label>
-                        <input type="text" id="unidad" name="unidad" placeholder="Servicio/Hora">
-                    </div>
-                    <div class="form-group">
-                        <label for="numero_de_contrato">N° Contrato</label>
-                        <input type="text" id="numero_de_contrato" name="numero_de_contrato">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="factura_relacionada_con_la_operacion">Factura Relacionada</label>
-                    <input type="text" id="factura_relacionada_con_la_operacion" name="factura_relacionada_con_la_operacion">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Persona que Firma (*)</label>
-                        <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="cargo_de_la_persona_que_firma_la_solicitud">Cargo</label>
-                        <input type="text" id="cargo_de_la_persona_que_firma_la_solicitud" name="cargo_de_la_persona_que_firma_la_solicitud">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion">¿Cuenta con archivos o información adicional? (Describa)</label>
-                    <textarea id="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" name="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" rows="2"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="comentarios">Comentarios Finales</label>
-                    <textarea id="comentarios" name="comentarios" rows="2"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="imagen_usuario">Cargar imagen para Word</label>
-                    <input type="file" id="imagen_usuario" name="imagen_usuario" accept="image/*">
-                </div>
-
-                <button type="submit" class="btn-submit">Generar Solicitud y Descargar Word</button>
-            </form>
-        </div>
+      <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" id="navToggle">
+        <span></span><span></span><span></span>
+      </button>
     </div>
 
-    <footer>
-        &copy; 2025 Strat & Tax - Sistema de Gestión Privado.
-    </footer>
+    <div class="nav-drawer" id="navDrawer" aria-hidden="true">
+      <div class="nav-drawer__inner">
+        <a class="nav-drawer__link" href="#solucion">Solución</a>
+        <a class="nav-drawer__link" href="#servicios">Servicios</a>
+        <a class="nav-drawer__link" href="#proceso">Proceso</a>
+        <a class="nav-drawer__link" href="#seguridad">Seguridad</a>
+        <a class="btn btn--primary btn--full" href="contacto.html">Acceso clientes →</a>
+      </div>
+    </div>
+  </header>
 
-    <script>
-        function login() {
-            const user = document.getElementById('usuario').value;
-            const pass = document.getElementById('password').value;
-            const error = document.getElementById('error-msg');
+  <main role="main">
+    
+    <section class="hero" id="inicio">
+      <div class="container hero__inner">
+        <div class="hero__copy">
+          <div class="badge">
+            <span class="badge__dot" aria-hidden="true"></span>
+            Plataforma empresarial · AWS Ready · Flujos trazables
+          </div>
 
-            // Lógica de autenticación frontal (reemplazar por validación real de servidor en producción)
-            if (user === "admin" && pass === "1234") { 
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('form-section').style.display = 'block';
-                document.getElementById('logout-btn-container').style.display = 'block';
-                
-                document.getElementById('hero-title').innerText = "Panel de Registro";
-                document.getElementById('hero-subtitle').innerText = "Complete los campos para generar el documento.";
-            } else {
-                error.style.display = 'block';
-            }
-        }
+          <h1 class="hero__title">
+            Fiscalidad corporativa con
+            <span class="text-gradient">precisión</span>,
+            <span class="text-gradient">control</span> y
+            <span class="text-gradient">velocidad</span>.
+          </h1>
 
-        function logout() {
-            location.reload();
-        }
+          <p class="hero__subtitle">
+            Automatizá generación de documentos, controlá el ciclo de órdenes y mantené cumplimiento
+            con procesos claros. Interfaz premium. Backend sólido.
+          </p>
 
-        // Script para manejar el envío del formulario
-        document.getElementById('solicitudForm').onsubmit = function(e) {
-            // Aquí iría tu lógica de fetch para conectar con el backend que genera el Word
-            const btn = this.querySelector('button');
-            btn.disabled = true;
-            btn.innerText = 'Generando Documento...';
-            
-            // Ejemplo de cómo capturar la descripción del select
-            const select = document.getElementById('servicio');
-            document.getElementById('descripcion_del_servicio').value = select.options[select.selectedIndex].text;
-        };
-    </script>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="contacto.html">
+              Ingresar al sistema <span class="btn__icon" aria-hidden="true">→</span>
+            </a>
+            <a class="btn btn--ghost" href="#solucion">Ver solución</a>
+          </div>
+
+          <div class="hero__metrics" aria-label="Métricas clave">
+            <div class="metric">
+              <div class="metric__value">+99%</div>
+              <div class="metric__label">Consistencia documental</div>
+            </div>
+            <div class="metric">
+              <div class="metric__value">24/7</div>
+              <div class="metric__label">Acceso seguro</div>
+            </div>
+            <div class="metric">
+              <div class="metric__value">Serverless</div>
+              <div class="metric__label">Escalabilidad AWS</div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero__panel" aria-label="Resumen ejecutivo">
+          <div class="card card--glass">
+            <div class="card__header">
+              <div class="card__title">Resumen ejecutivo</div>
+              <div class="pill">Enterprise</div>
+            </div>
+
+            <div class="card__body">
+              <ul class="check">
+                <li><span class="check__i" aria-hidden="true">✓</span><span>Automatización de Word/ZIP</span></li>
+                <li><span class="check__i" aria-hidden="true">✓</span><span>Flujos trazables por usuario</span></li>
+                <li><span class="check__i" aria-hidden="true">✓</span><span>Integración con email / almacenamiento</span></li>
+                <li><span class="check__i" aria-hidden="true">✓</span><span>Escalable y auditable</span></li>
+              </ul>
+              <div class="divider"></div>
+              <div class="mini-kpis">
+                <div class="mini-kpi">
+                  <div class="mini-kpi__k">Riesgo ↓</div>
+                  <div class="mini-kpi__v">Control</div>
+                </div>
+                <div class="mini-kpi">
+                  <div class="mini-kpi__k">Tiempo ↓</div>
+                  <div class="mini-kpi__v">Automatización</div>
+                </div>
+                <div class="mini-kpi">
+                  <div class="mini-kpi__k">Decisión ↑</div>
+                  <div class="mini-kpi__v">Reportes</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card__footer">
+              <a class="btn btn--soft" href="contacto.html">Acceder</a>
+              <span class="muted">Acceso protegido · estándar corporativo</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <div class="hero__fade" aria-hidden="true"></div>
+    </section>
+
+    <section class="section" id="solucion">
+      <div class="container">
+        <header class="section__head">
+          <h2 class="h2">Una solución diseñada para operar</h2>
+          <p class="lead">Menos fricción, más control. Procesos claros desde el login hasta la entrega del ZIP.</p>
+        </header>
+
+        <div class="grid grid--3">
+          <article class="card card--feature">
+            <div class="icon icon--blue" aria-hidden="true">⧉</div>
+            <h3 class="h3">Automatización documental</h3>
+            <p class="muted">Generación automática de archivos, consistencia de plantillas y salida controlada.</p>
+          </article>
+
+          <article class="card card--feature">
+            <div class="icon icon--gold" aria-hidden="true">⌁</div>
+            <h3 class="h3">Trazabilidad</h3>
+            <p class="muted">Control por usuario, estado del proceso y registro de actividad para auditoría interna.</p>
+          </article>
+
+          <article class="card card--feature">
+            <div class="icon icon--green" aria-hidden="true">⇪</div>
+            <h3 class="h3">Escalabilidad</h3>
+            <p class="muted">Arquitectura preparada para crecer: performance y seguridad sin complejidad.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="servicios">
+      <div class="container">
+        <header class="section__head">
+          <h2 class="h2">Servicios</h2>
+          <p class="lead">Un portafolio claro, corporativo y flexible para tu operación.</p>
+        </header>
+
+        <div class="grid grid--2">
+          <article class="card card--service">
+            <div class="service">
+              <div class="service__icon" aria-hidden="true">📌</div>
+              <div class="service__content">
+                <h3 class="h3">Consultoría fiscal</h3>
+                <p class="muted">Estrategias y optimización con foco en cumplimiento y riesgo.</p>
+                <ul class="bullets">
+                  <li>Planificación tributaria</li>
+                  <li>Revisión y consistencia documental</li>
+                  <li>Soporte a dirección</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <article class="card card--service">
+            <div class="service">
+              <div class="service__icon" aria-hidden="true">🧾</div>
+              <div class="service__content">
+                <h3 class="h3">Auditoría &amp; control</h3>
+                <p class="muted">Estandarización, control interno y preparación para revisiones.</p>
+                <ul class="bullets">
+                  <li>Checklist y flujos</li>
+                  <li>Validación de datos</li>
+                  <li>Reporte ejecutivo</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="cta">
+          <div class="cta__copy">
+            <h3 class="h3">¿Listo para operar con estándar enterprise?</h3>
+            <p class="muted">Accedé a la plataforma y gestioná solicitudes en minutos.</p>
+          </div>
+          <a class="btn btn--primary" href="contacto.html">Ir a Acceso →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="proceso">
+      <div class="container">
+        <header class="section__head">
+          <h2 class="h2">Proceso simple, resultado profesional</h2>
+          <p class="lead">Un flujo pensado para minimizar errores y acelerar entregas.</p>
+        </header>
+
+        <div class="timeline">
+          <div class="timeline__item">
+            <div class="timeline__dot" aria-hidden="true"></div>
+            <div class="timeline__content">
+              <div class="timeline__title">1) Acceso seguro</div>
+              <div class="muted">Login de cliente y sesión controlada.</div>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__dot" aria-hidden="true"></div>
+            <div class="timeline__content">
+              <div class="timeline__title">2) Carga de datos</div>
+              <div class="muted">Formulario completo y validado.</div>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__dot" aria-hidden="true"></div>
+            <div class="timeline__content">
+              <div class="timeline__title">3) Generación</div>
+              <div class="muted">Documentos + ZIP final, descarga controlada.</div>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__dot" aria-hidden="true"></div>
+            <div class="timeline__content">
+              <div class="timeline__title">4) Distribución</div>
+              <div class="muted">Envío a email y/o almacenamiento según configuración.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="seguridad">
+      <div class="container">
+        <header class="section__head">
+          <h2 class="h2">Seguridad y estándar corporativo</h2>
+          <p class="lead">Capa visual pro + backend con controles de acceso. Sin “parches”, sin improvisación.</p>
+        </header>
+
+        <div class="grid grid--3">
+          <article class="card card--feature">
+            <div class="icon icon--blue" aria-hidden="true">🔒</div>
+            <h3 class="h3">Acceso controlado</h3>
+            <p class="muted">Roles, sesiones y tokens. Sin exposición innecesaria.</p>
+          </article>
+          <article class="card card--feature">
+            <div class="icon icon--green" aria-hidden="true">🧠</div>
+            <h3 class="h3">Validación</h3>
+            <p class="muted">Campos consistentes y flujo claro para reducir errores.</p>
+          </article>
+          <article class="card card--feature">
+            <div class="icon icon--gold" aria-hidden="true">🧾</div>
+            <h3 class="h3">Auditable</h3>
+            <p class="muted">Diseñado para operar con trazabilidad y evidencia.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--final">
+      <div class="container">
+        <div class="final">
+          <div class="final__copy">
+            <h2 class="h2">Entrá y generá tu solicitud</h2>
+            <p class="lead">Interfaz premium + flujo operativo. Listo para producción.</p>
+          </div>
+          <div class="final__actions">
+            <a class="btn btn--primary" href="contacto.html">Acceder ahora →</a>
+            <a class="btn btn--ghost" href="#inicio">Volver arriba</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <div class="footer__brand">STRAT &amp; TAX</div>
+        <div class="muted">© 2025 · Todos los derechos reservados</div>
+      </div>
+      <div class="footer__right">
+        <a class="footer__link" href="#solucion">Solución</a>
+        <a class="footer__link" href="#servicios">Servicios</a>
+        <a class="footer__link" href="#proceso">Proceso</a>
+        <a class="footer__link" href="contacto.html">Acceso</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('navToggle');
+      const drawer = document.getElementById('navDrawer');
+
+      function setOpen(open) {
+        document.body.classList.toggle('nav-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        drawer.setAttribute('aria-hidden', String(!open));
+      }
+
+      toggle?.addEventListener('click', () => {
+        const open = !document.body.classList.contains('nav-open');
+        setOpen(open);
+      });
+
+      drawer?.querySelectorAll('a')?.forEach(a => {
+        a.addEventListener('click', () => setOpen(false));
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setOpen(false);
+      });
+    })();
+  </script>
 </body>
 </html>

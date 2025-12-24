@@ -1,0 +1,41 @@
+
+:root {
+    --bg-0: #070b16;
+    --bg-1: #0b1020;
+    --panel: rgba(255, 255, 255, .06);
+    --panel-2: rgba(255, 255, 255, .08);
+    --border: rgba(148, 163, 184, .18);
+    --text: #e5e7eb;
+    --muted: rgba(229, 231, 235, .66);
+    --primary: #2563eb;
+    --primary-2: #60a5fa;
+    --gold: #d4b537;
+    --green: #22c55e;
+    --radius-1: 14px;
+    --radius-2: 18px;
+    --radius-3: 24px;
+    --shadow-sm: 0 10px 26px rgba(0, 0, 0, .35);
+    --shadow-md: 0 18px 50px rgba(0, 0, 0, .45);
+    --shadow-lg: 0 30px 90px rgba(0, 0, 0, .55);
+    --ring: 0 0 0 6px rgba(37, 99, 235, .18);
+    --container: 1120px;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+}
+html, body {
+    height: 100%;
+}
+* {
+    box-sizing: border-box;
+}
+
+html[Attributes Style] {
+    -webkit-locale: "es";
+}
+user agent stylesheet
+:root {
+    view-transition-name: root;
+}
+user agent stylesheet
+html {
+    display: block;
+}
