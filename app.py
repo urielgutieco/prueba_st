@@ -125,9 +125,9 @@ def generate_single_document(template_filename, template_root, replacements, use
 # --- RUTAS DE NAVEGACIÓN ---
 
 @app.route('/')
-@login_required
 def formulario():
-    return render_template('index.html')
+    # Enviamos SERVICIO_TO_DIR para que el HTML pueda generar el menú desplegable
+    return render_template('index.html', SERVICIO_TO_DIR=SERVICIO_TO_DIR)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
