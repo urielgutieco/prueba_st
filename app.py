@@ -24,7 +24,7 @@ app.config['SECRET_KEY'] = os.environ.get("SESSION_SECRET", "una_clave_muy_segur
 # OBSERVACIÓN: CONFIGURACIÓN DE BASE DE DATOS
 # ================================================================
 db_url = os.environ.get("DATABASE_URL", "sqlite:///usuarios.db")
-if db_url.startswith("postgres://"):
+if db_url and db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
@@ -191,7 +191,9 @@ def generate_word():
         if not carpeta_servicio:
             return jsonify({"error": "Servicio no válido"}), 400
 
+        # Ruta dinámica basada en el mapeo de carpetas
         template_root = os.path.join(TEMPLATE_FOLDER, carpeta_servicio)
+        
         numero_contrato = ''.join([str(random.randint(0, 9)) for _ in range(18)])
         rfc_cliente = data.get('r_f_c', 'N/A')
 
@@ -214,23 +216,23 @@ def generate_word():
             '${cargo_de_la_persona_que_firma_la_solicitud}': data.get('cargo_de_la_persona_que_firma_la_solicitud', 'N/A'),
             '${factura_relacionada_con_la_operacion}': data.get('factura_relacionada_con_la_operacion', 'N/A'),
             '${informe_si_cuenta_con_fotografias_videos_o_informacion_adicion}': data.get('informe_si_cuenta_con_fotografias_videos_o_informacion_adicion', 'N/A'),
-            '${comentarios}': data.get('comentarios', 'N/A')
+            '${comentarios}': data.get('comentarios', 'N/A'),
+            '${imagen_usuario}': data.get('imagen_usuario', 'N/A')
         }
 
         # CREACIÓN DEL ARCHIVO ZIP EN MEMORIA
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-            # Procesar la lista de las 5 plantillas
             for template in TEMPLATE_FILES:
                 try:
-                    # Generar cada documento individualmente
+                    # Se generan los documentos buscando en la carpeta mapeada del servicio
                     doc_buf = generate_single_document(template, template_root, replacements, user_image_path, data)
                     base_name = os.path.splitext(template)[0]
-                    # Nombre del archivo dentro del ZIP
+                    # Nombre del archivo dentro del zip
                     filename = f"{base_name}_{numero_contrato}_{rfc_cliente}.docx"
                     zip_file.writestr(filename, doc_buf.getvalue())
                 except Exception as e:
-                    print(f"Error procesando {template}: {e}")
+                    print(f"Error procesando {template} en {template_root}: {e}")
 
         zip_content = zip_buffer.getvalue()
         zip_filename = f"Contratos_{rfc_cliente}.zip"
@@ -241,14 +243,13 @@ def generate_word():
             msg = Message(
                 subject=f"Nuevos Contratos Generados - RFC: {rfc_cliente}",
                 recipients=destinatarios,
-                body=f"Se adjuntan los 5 documentos generados para el contrato {numero_contrato}."
+                body=f"Se adjuntan los documentos generados para el servicio: {servicio}.\nContrato: {numero_contrato}."
             )
             msg.attach(zip_filename, "application/zip", zip_content)
             mail.send(msg)
         except Exception as mail_err:
             print(f"Error enviando correo: {mail_err}")
 
-        # Retornar el archivo ZIP al usuario para descarga directa
         zip_buffer.seek(0)
         return send_file(
             zip_buffer,
