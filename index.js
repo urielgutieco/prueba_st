@@ -94,18 +94,7 @@ const transporter = nodemailer.createTransport({
    RUTAS
 ========================= */
 
-// NUEVA RUTA: Envía las contraseñas al Frontend desde las variables de entorno de Render
-app.get('/api/config', (req, res) => {
-    res.json({
-        users: [
-            { u: 'admin', p: process.env.USER_1 },
-            { u: 'gerente', p: process.env.USER_2 },
-            { u: 'empleado', p: process.env.USER_3 },
-            { u: 'empleados', p: process.env.USER_4 }
-        ]
-    });
-});
-
+// CORRECCIÓN 2: Ruta raíz para que Render confirme que el servicio está activo (Health Check)
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => {

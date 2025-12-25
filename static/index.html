@@ -262,18 +262,11 @@
 
     </div>
 </div>
-</section>
+            </div>
+        </div>
+    </section>
 
-<div x-data="{ 
-        section: 'inicio', 
-        userTyped: '', 
-        passTyped: '', 
-        isAuthenticated: false, 
-        validUsers: [] 
-    }" 
-    x-init="fetch('/api/config').then(res => res.json()).then(data => validUsers = data.users)">
-
-    <section x-show="section === 'login'" x-transition x-cloak class="container my-5 py-5">
+        <section x-show="section === 'login'" x-transition x-cloak class="container my-5 py-5">
         <div class="row justify-content-center">
             <div class="col-md-4">
                 <div class="card p-4 shadow-sm">
@@ -283,6 +276,12 @@
                     </div>
 
                     <form @submit.prevent="
+                        const validUsers = [
+                            { u: 'admin', p: '12346' },
+                            { u: 'gerente', p: 'pass2025' },
+                            { u: 'empleado', p: 'emp98' },
+                            { u: 'empleados', p: 'emp97' }
+                        ];
                         const found = validUsers.find(user => user.u === userTyped && user.p === passTyped);
                         
                         if (found) {
@@ -308,8 +307,6 @@
             </div>
         </div>
     </section>
-</div>
-</section>
 
     <section x-show="section === 'formulario'" x-transition x-cloak class="container my-5">
         <div class="card border-0">
