@@ -70,7 +70,6 @@
             transform: translateY(-2px);
         }
 
-        /* Estilos para Inputs del Formulario (Manteniendo consistencia) */
         input, select, textarea {
             background: rgba(255, 255, 255, 0.1) !important;
             border: 1px solid var(--border-color) !important;
@@ -97,7 +96,7 @@
                 <a class="nav-link" href="#" @click="section = 'inicio'">Inicio</a>
                 
                 <template x-if="!isAuthenticated">
-                    <a class="nav-link" href="#" @click="section = 'login'">Acceder</a>
+                    <a class="nav-link" href="#" @click="section = 'login'; loadExternalLogin()">Acceder</a>
                 </template>
                 
                 <template x-if="isAuthenticated">
@@ -117,71 +116,22 @@
             <div class="container">
                 <h1 class="display-4 fw-bold">Soluciones Profesionales en Construcción</h1>
                 <p class="lead">Ingeniería, Urbanismo y Mantenimiento a su alcance.</p>
-                <button @click="isAuthenticated ? section = 'formulario' : section = 'login'" class="btn btn-lg btn-light mt-3">
+                <button @click="if(isAuthenticated) { section = 'formulario' } else { section = 'login'; loadExternalLogin(); }" class="btn btn-lg btn-light mt-3">
                     Comenzar Solicitud
                 </button>
             </div>
         </div>
-
-        <div class="container my-5">
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <h2 class="mb-4 border-bottom pb-2">Información Personal / Empresa</h2>
-                    <p>Somos una empresa dedicada a la gestión integral de proyectos de infraestructura...</p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item bg-transparent text-white"><strong>Ubicación:</strong> Ciudad de México, México</li>
-                        <li class="list-group-item bg-transparent text-white"><strong>Contacto:</strong> contacto@tuempresa.com</li>
-                        <li class="list-group-item bg-transparent text-white"><strong>Especialidad:</strong> Ingeniería Civil y Desarrollo Urbano</li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <h2 class="mb-4 border-bottom pb-2">Nuestros Servicios</h2>
-                    <div class="accordion" id="serviciosAccordion">
-                        <div class="accordion-item bg-dark text-white">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#serv1">
-                                    Vivienda Unifamiliar
-                                </button>
-                            </h2>
-                            <div id="serv1" class="accordion-collapse collapse show" data-bs-parent="#serviciosAccordion">
-                                <div class="accordion-body">Defensa Legal</div>
-                            </div>
-                        </div>
-                        <div class="accordion-item bg-dark text-white">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#serv2">
-                                    Desarrollo Urbano
-                                </button>
-                            </h2>
-                            <div id="serv2" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion">
-                                <div class="accordion-body">Estrategia Fiscal</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
     <section x-show="section === 'login'" class="container my-5 py-5" x-cloak>
         <div class="row justify-content-center">
             <div class="col-md-4">
-                <div class="card p-4">
-                    <h3 class="text-center mb-4">Iniciar Sesión</h3>
-                    <form @submit.prevent="isAuthenticated = true; section = 'formulario'">
-                        <div class="mb-3">
-                            <label class="form-label">Usuario</label>
-                            <input type="text" name="user" class="form-control" required>
+                <div id="login-container">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                        <button type="button" @click="section = 'inicio'" class="btn btn-link w-100 mt-2 text-muted">
-                            Volver al inicio
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -197,64 +147,14 @@
                     <div class="row g-3">
                         <div id="form-solicitud">
                             <h2>Generar registro.</h2>
-                            <p>Complete los campos a continuación</p>
-
                             <div class="form-group mb-3">
                                 <label for="servicio">Selecciona un servicio (*)</label>
                                 <select id="servicio" name="servicio" class="form-select" required onchange="document.getElementById('descripcion_del_servicio').value = this.value">
                                     <option value="" disabled selected>--- Elige una opción ---</option>
                                     <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
-                                    <option value="Dasarrollo urbano">Dasarrollo urbano</option>
-                                    <option value="Ingenieria civil">Ingenieria civil</option>
                                     </select>
                                 <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
                             </div>
-
-                            <div class="form-group mb-3">
-                                <label for="razon_social">Razón Social (*)</label>
-                                <input type="text" id="razon_social" name="razon_social" class="form-control" required>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="r_f_c">R.F.C (*)</label>
-                                <input type="text" id="r_f_c" name="r_f_c" class="form-control" required>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="domicilio_del_cliente">Domicilio del Cliente</label>
-                                <input type="text" id="domicilio_del_cliente" name="domicilio_del_cliente" class="form-control">
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="telefono_del_cliente">Teléfono del Cliente</label>
-                                <input type="tel" id="telefono_del_cliente" name="telefono_del_cliente" class="form-control">
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="correo_del_cliente">Correo del Cliente (*)</label>
-                                <input type="email" id="correo_del_cliente" name="correo_del_cliente" class="form-control" required>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="fecha_de_inicio_del_servicio">Fecha de Inicio Estimada</label>
-                                <input type="date" id="fecha_de_inicio_del_servicio" name="fecha_de_inicio_del_servicio" class="form-control">
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="monto_de_la_operacion_sin_iva">Monto de la Operación (Sin IVA) (*)</label>
-                                <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" class="form-control" required>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Nombre Completo de la Persona que Firma (*)</label>
-                                <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" class="form-control" required>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="imagen_usuario">Cargar imagen para insertar en Word</label>
-                                <input type="file" id="imagen_usuario" name="imagen_usuario" class="form-control" accept="image/*">
-                            </div>
-
                             <button type="submit" class="btn btn-primary w-100 mt-4">Generar Solicitud y Descargar Word</button>
                         </div>
                     </div>
@@ -268,5 +168,38 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Función para cargar el login.html mediante fetch
+        async function loadExternalLogin() {
+            const container = document.getElementById('login-container');
+            try {
+                const response = await fetch('login.html');
+                if (response.ok) {
+                    const html = await response.text();
+                    container.innerHTML = html;
+                    
+                    // IMPORTANTE: Como el formulario es dinámico, debemos decirle 
+                    // a Alpine o al JS cómo manejar el submit del formulario cargado.
+                    const loginForm = container.querySelector('form');
+                    if (loginForm) {
+                        loginForm.addEventListener('submit', (e) => {
+                            e.preventDefault();
+                            // Aquí simulamos el éxito del login
+                            // Accedemos al scope de Alpine para cambiar el estado
+                            const bodyData = document.querySelector('body').__x.$data;
+                            bodyData.isAuthenticated = true;
+                            bodyData.section = 'formulario';
+                        });
+                    }
+                } else {
+                    container.innerHTML = '<p class="text-danger">Error al cargar el formulario de acceso.</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = '<p class="text-danger">Error de conexión.</p>';
+            }
+        }
+    </script>
 </body>
 </html>
