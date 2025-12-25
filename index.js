@@ -13,16 +13,18 @@ require('dotenv').config();
 
 const app = express();
 
-// --- Middlewares ---
+/* =========================
+   MIDDLEWARES
+========================= */
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Archivos estáticos
 app.use(express.static(path.join(__dirname, 'static')));
 
-// Directorios
+/* =========================
+   DIRECTORIOS
+========================= */
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 const TEMPLATES_DIR = path.join(__dirname, 'template_word');
 
@@ -30,13 +32,17 @@ if (!fs.existsSync(UPLOADS_DIR)) {
     fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-// Multer
+/* =========================
+   MULTER
+========================= */
 const upload = multer({
-    dest: 'uploads/',
+    dest: UPLOADS_DIR,
     limits: { fileSize: 10 * 1024 * 1024 }
 });
 
-// Servicios
+/* =========================
+   CONSTANTES
+========================= */
 const SERVICIO_TO_DIR = {
     "Servicios de construccion de unidades unifamiliares": "construccion_unifamiliar",
     "Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares": "reparacion_remodelacion_unifamiliar",
@@ -66,17 +72,29 @@ const SERVICIO_TO_DIR = {
 
 const DOCUMENT_NAMES = ['plantilla_solicitud.docx', '1.docx', '2.docx', '3.docx', '4.docx'];
 
-// Rutas
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'templates', 'index.html'));
+/* =========================
+   TRANSPORTER (REUTILIZABLE)
+========================= */
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
+/* =========================
+   RUTAS
+========================= */
 app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => {
     try {
         const data = req.body;
-        const servicio = data.servicio;
-        const folder = SERVICIO_TO_DIR[servicio];
-
+        const folder = SERVICIO_TO_DIR[data.servicio];
         if (!folder) return res.status(400).json({ error: "Servicio no reconocido." });
 
         const zip = new JSZip();
@@ -89,53 +107,39 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
         for (const docName of DOCUMENT_NAMES) {
             const templatePath = path.join(TEMPLATES_DIR, folder, docName);
+            if (!fs.existsSync(templatePath)) continue;
 
-            if (fs.existsSync(templatePath)) {
-                const content = fs.readFileSync(templatePath);
-                const zipDoc = new PizZip(content);
+            const content = fs.readFileSync(templatePath);
+            const zipDoc = new PizZip(content);
 
-                const doc = new Docxtemplater(zipDoc, {
-                    modules: req.file ? [new ImageModule(imageOptions)] : [],
-                    paragraphLoop: true,
-                    linebreaks: true,
-                });
+            const doc = new Docxtemplater(zipDoc, {
+                modules: req.file ? [new ImageModule(imageOptions)] : [],
+                paragraphLoop: true,
+                linebreaks: true
+            });
 
-                doc.render({
-                    ...data,
-                    imagen_usuario: req.file ? req.file.path : null,
-                    fecha_generacion: new Date().toLocaleDateString('es-MX')
-                });
+            doc.render({
+                ...data,
+                imagen_usuario: req.file ? req.file.path : null,
+                fecha_generacion: new Date().toLocaleDateString('es-MX')
+            });
 
-                zip.file(`Contrato_${docName}`, doc.getZip().generate({ type: 'nodebuffer' }));
-            }
+            zip.file(`Contrato_${docName}`, doc.getZip().generate({ type: 'nodebuffer' }));
         }
 
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
-
-        const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
 
         await transporter.sendMail({
             from: `"Sistema SuperAdmin" <${process.env.EMAIL_USER}>`,
             to: "uriel.gutierrenz@gmail.com, urielgutieco@gmail.com",
             subject: `Nuevo Registro: ${data.razon_social || 'Sin Nombre'}`,
-            text: `Se ha generado un nuevo registro para el servicio: ${servicio}`,
+            text: `Se ha generado un nuevo registro para el servicio: ${data.servicio}`,
             attachments: [{ filename: `Registro_${data.r_f_c || 'documento'}.zip`, content: zipBuffer }]
         });
 
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
 
-        res.set({
-            'Content-Type': 'application/zip',
-            'Content-Disposition': `attachment; filename=Registro_${data.r_f_c || 'descarga'}.zip`
-        }).send(zipBuffer);
+        res.json({ status: "OK", message: "Documentos generados y enviados por correo." });
 
     } catch (error) {
         console.error(error);
@@ -144,6 +148,8 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
     }
 });
 
-// Render / Producción
+/* =========================
+   SERVER
+========================= */
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
