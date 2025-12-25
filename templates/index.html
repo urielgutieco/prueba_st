@@ -7,9 +7,6 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/login.html">
-    
     
     <style>
         :root {
@@ -57,6 +54,13 @@
             color: var(--text-main);
         }
 
+        /* Estilos para que los inputs se vean bien en fondo oscuro */
+        .form-control, .form-select, textarea {
+            background-color: rgba(255,255,255,0.1) !important;
+            border: 1px solid var(--border-color) !important;
+            color: white !important;
+        }
+
         .btn-primary {
             background-color: var(--accent-blue);
             color: white;
@@ -67,20 +71,13 @@
             transition: transform 0.2s, background 0.2s;
         }
 
-        .btn-primary:hover {
-            background-color: #1d4ed8;
-            transform: translateY(-2px);
-        }
-
-        [x-cloak] { 
-            display: none !important; 
-        }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 
 <body x-data="{ 
     section: 'inicio', 
-    isAuthenticated: true 
+    isAuthenticated: false 
 }">
 
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
@@ -96,14 +93,12 @@
                 <template x-if="isAuthenticated">
                     <div class="d-flex align-items-center">
                         <a class="nav-link" href="#" @click="section = 'formulario'">Generar Contrato</a>
-                        <a class="nav-link text-warning" href="/">Cerrar Sesión</a>
+                        <a class="nav-link text-warning" href="#" @click="isAuthenticated = false; section = 'inicio'">Cerrar Sesión</a>
                     </div>
                 </template>
             </div>
         </div>
     </nav>
-
-    <div id="alert-container" class="container mt-3"></div>
 
     <section x-show="section === 'inicio'" x-cloak>
         <div class="hero-section text-center">
@@ -140,16 +135,6 @@
                                 <div class="accordion-body">Defensa Legal</div>
                             </div>
                         </div>
-                        <div class="accordion-item bg-dark text-white">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#serv2">
-                                    Desarrollo Urbano
-                                </button>
-                            </h2>
-                            <div id="serv2" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion">
-                                <div class="accordion-body">Estrategia Fiscal</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -161,14 +146,14 @@
             <div class="col-md-4">
                 <div class="card p-4">
                     <h3 class="text-center mb-4">Iniciar Sesión</h3>
-                    <form action="/login" method="POST">
+                    <form @submit.prevent="isAuthenticated = true; section = 'formulario'">
                         <div class="mb-3">
                             <label class="form-label">Usuario</label>
-                            <input type="text" name="user" class="form-control" required>
+                            <input type="text" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <input type="password" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Entrar</button>
                         <button type="button" @click="section = 'inicio'" class="btn btn-link w-100 mt-2 text-muted">
@@ -186,148 +171,57 @@
                 <h4 class="mb-0">Generador de Contratos de Servicio</h4>
             </div>
             <div class="card-body">
-                <form action="/generate-word" method="POST" enctype="multipart/form-data">
+                <form action="/generate-word" method="POST" enctype="multipart/form-data" id="solicitudForm">
                     <div class="row g-3">
-                        <div id="form-solicitud" class="card">
-            <h2>Generar registro.</h2>
-            <p>Complete los campos a continuación</p>
+                        <div class="col-12">
+                            <h2>Generar registro.</h2>
+                            <p>Complete los campos a continuación</p>
+                        </div>
 
-            <form id="solicitudForm">
-                <div class="form-group">
-                    <label for="servicio">Selecciona un servicio (*)</label>
-                    <select id="servicio" name="servicio" required onchange="document.getElementById('descripcion_del_servicio').value = this.value">
-                        <option value="" disabled selected>--- Elige una opción ---</option>
-                        <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
-                        <option value="Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares">Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares</option>
-                        <option value="Servicio de remodelacion general de viviendas unifamiliares">Servicio de remodelacion general de viviendas unifamiliares</option>
-                        <option value="Servicios de reparacion de casas moviles en el sitio">Servicios de reparacion de casas moviles en el sitio</option>
-                        <option value="Servicios de construccion y reparacion de patios y terrazas">Servicios de construccion y reparacion de patios y terrazas</option>
-                        <option value="Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares">Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares</option>
-                        <option value="Servicio de construccion de casas unifamiliares nuevas">Servicio de construccion de casas unifamiliares nuevas</option>
-                        <option value="Servicio de instalacion de casas unifamiliares prefabricadas">Servicio de instalacion de casas unifamiliares prefabricadas</option>
-                        <option value="Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas">Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas</option>
-                        <option value="Dasarrollo urbano">Dasarrollo urbano</option>
-                        <option value="Servicio de planificacion de la ordenacion urbana">Servicio de planificacion de la ordenacion urbana</option>
-                        <option value="Servicio de administracion de tierras urbanas">Servicio de administracion de tierras urbanas</option>
-                        <option value="Servicio de programacion de inversiones urbanas">Servicio de programacion de inversiones urbanas</option>
-                        <option value="Servicio de reestructuracion de barrios marginales">Servicio de reestructuracion de barrios marginales</option>
-                        <option value="Servicios de alumbrado urbano">Servicios de alumbrado urbano</option>
-                        <option value="Servicios de control o regulacion del desarrollo urbano">Servicios de control o regulacion del desarrollo urbano</option>
-                        <option value="Servicios de estandares o regulacion de edificios urbanos">Servicios de estandares o regulacion de edificios urbanos</option>
-                        <option value="Servicios comunitarios urbanos">Servicios comunitarios urbanos</option>
-                        <option value="Servicios de administracion o gestion de proyectos o programas urbanos">Servicios de administracion o gestion de proyectos o programas urbanos</option>
-                        <option value="Ingenieria civil">Ingenieria civil</option>
-                        <option value="Ingenieria de carreteras">Ingenieria de carreteras</option>
-                        <option value="Ingenieria deinfraestructura de instalaciones o fabricas">Ingenieria deinfraestructura de instalaciones o fabricas</option>
-                        <option value="Servicios de mantenimiento e instalacion de equipo pesado">Servicios de mantenimiento e instalacion de equipo pesado</option>
-                        <option value="Servicio de mantenimiento y reparacion de equipo pesado">Servicio de mantenimiento y reparacion de equipo pesado</option>
-                    </select>
-                    <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
-                </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="servicio">Selecciona un servicio (*)</label>
+                            <select id="servicio" name="servicio" class="form-select" required onchange="document.getElementById('descripcion_del_servicio').value = this.value">
+                                <option value="" disabled selected>--- Elige una opción ---</option>
+                                <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
+                                <option value="Dasarrollo urbano">Dasarrollo urbano</option>
+                                <option value="Ingenieria civil">Ingenieria civil</option>
+                                </select>
+                            <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
+                        </div>
 
-                <div class="form-group">
-                    <label for="razon_social">Razón Social (*)</label>
-                    <input type="text" id="razon_social" name="razon_social" required>
-                </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="razon_social">Razón Social (*)</label>
+                            <input type="text" id="razon_social" name="razon_social" class="form-control" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="r_f_c">R.F.C (*)</label>
-                    <input type="text" id="r_f_c" name="r_f_c" required>
-                </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="r_f_c">R.F.C (*)</label>
+                            <input type="text" id="r_f_c" name="r_f_c" class="form-control" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="domicilio_del_cliente">Domicilio del Cliente</label>
-                    <input type="text" id="domicilio_del_cliente" name="domicilio_del_cliente">
-                </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="correo_del_cliente">Correo del Cliente (*)</label>
+                            <input type="email" id="correo_del_cliente" name="correo_del_cliente" class="form-control" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="telefono_del_cliente">Teléfono del Cliente</label>
-                    <input type="tel" id="telefono_del_cliente" name="telefono_del_cliente">
-                </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="monto_de_la_operacion_sin_iva">Monto de la Operación (Sin IVA) (*)</label>
+                            <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" class="form-control" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="correo_del_cliente">Correo del Cliente (*)</label>
-                    <input type="email" id="correo_del_cliente" name="correo_del_cliente" required>
-                </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Nombre Completo de la Persona que Firma (*)</label>
+                            <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" class="form-control" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="fecha_de_inicio_del_servicio">Fecha de Inicio Estimada</label>
-                    <input type="date" id="fecha_de_inicio_del_servicio" name="fecha_de_inicio_del_servicio">
-                </div>
+                        <div class="col-12 mb-3">
+                            <label for="imagen_usuario">Cargar imagen para insertar en Word</label>
+                            <input type="file" id="imagen_usuario" name="imagen_usuario" accept="image/*" class="form-control">
+                        </div>
 
-                <div class="form-group">
-                    <label for="fecha_de_conclusion_del_servicio">Fecha de Conclusión Estimada</label>
-                    <input type="date" id="fecha_de_conclusion_del_servicio" name="fecha_de_conclusion_del_servicio">
-                </div>
-
-                <div class="form-group">
-                    <label for="monto_de_la_operacion_sin_iva">Monto de la Operación (Sin IVA) (*)</label>
-                    <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="forma_de_pago">Forma de Pago</label>
-                    <input type="text" id="forma_de_pago" name="forma_de_pago">
-                </div>
-
-                <div class="form-group">
-                    <label for="cantidad">Cantidad de Unidades</label>
-                    <input type="number" id="cantidad" name="cantidad" step="1">
-                </div>
-
-                <div class="form-group">
-                    <label for="unidad">Unidad de Medida (Ej: Servicio, Hora, Documento)</label>
-                    <input type="text" id="unidad" name="unidad">
-                </div>
-
-                <div class="form-group">
-                    <label for="numero_de_contrato">Número de Contrato</label>
-                    <input type="text" id="numero_de_contrato" name="numero_de_contrato">
-                </div>
-
-                <div class="form-group">
-                    <label for="fecha_de_operacion">Fecha de Operacion</label>
-                    <input type="date" id="fecha_de_operacion" name="fecha_de_operacion">
-                </div>
-
-                <div class="form-group">
-                    <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Nombre Completo de la Persona que Firma (*)</label>
-                    <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="cargo_de_la_persona_que_firma_la_solicitud">Cargo de la Persona que Firma</label>
-                    <input type="text" id="cargo_de_la_persona_que_firma_la_solicitud" name="cargo_de_la_persona_que_firma_la_solicitud">
-                </div>
-
-                <div class="form-group">
-                    <label for="factura_relacionada_con_la_operacion">Factura Relacionada con la Operación</label>
-                    <input type="text" id="factura_relacionada_con_la_operacion" name="factura_relacionada_con_la_operacion">
-                </div>
-
-                <div class="form-group">
-                    <label for="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion">¿Cuenta con fotografías, videos o información adicional? (Describa)</label>
-                    <textarea id="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" name="informe_si_cuenta_con_fotografias_videos_o_informacion_adicion" rows="2"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="comentarios">Comentarios Finales (Observaciones, notas)</label>
-                    <textarea id="comentarios" name="comentarios" rows="3"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="imagen_usuario">Cargar imagen para insertar en Word</label>
-                    <input type="file" id="imagen_usuario" name="imagen_usuario" accept="image/*">
-                </div>
-
-                <button type="submit" class="btn-submit">Generar Solicitud y Descargar Word</button>
-            </form>
-        </div>
-
-        <button id="logout-btn" onclick="logout()">
-            Cerrar sesión
-        </button>
-    </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">Generar Solicitud y Descargar Word</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -341,6 +235,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-    <script>
-        const btn = document.getElementById('btn-submit');
-        const form = document.getElementById('login-form');
