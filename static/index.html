@@ -28,7 +28,6 @@
             letter-spacing: -0.01em;
         }
 
-        /* Navbar Profesional */
         .navbar {
             background-color: rgba(2, 6, 23, 0.8);
             backdrop-filter: blur(12px);
@@ -42,7 +41,6 @@
             color: var(--accent-light) !important;
         }
 
-        /* Hero Dinámico */
         .hero-section {
             background: 
                 radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
@@ -60,7 +58,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Cards Estilo Ejecutivo */
         .card {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -76,7 +73,6 @@
             padding: 25px;
         }
 
-        /* Formulario Organizado */
         .form-label {
             color: var(--text-dim);
             font-weight: 600;
@@ -101,7 +97,6 @@
             outline: none;
         }
 
-        /* Botones */
         .btn-primary {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             border: none;
@@ -116,7 +111,6 @@
             box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
         }
 
-        /* Accordion Custom */
         .accordion-item {
             background: transparent !important;
             border: 1px solid var(--border-color) !important;
@@ -253,7 +247,7 @@
                 <p class="text-dim small mb-0 mt-1">Llene los campos para la generación automatizada del documento</p>
             </div>
             <div class="card-body p-lg-5">
-                <form action="/generate-word" method="POST" enctype="multipart/form-data">
+                <form id="contratoForm" action="/generate-word" method="POST" enctype="multipart/form-data" onsubmit="handleFormSubmit(event)">
                     <div class="row g-4">
                         <div class="col-12">
                             <div class="p-4 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-10">
@@ -284,7 +278,6 @@
                                     <option value="Ingenieria deinfraestructura de instalaciones o fabricas">Ingenieria deinfraestructura de instalaciones o fabricas</option>
                                     <option value="Servicios de mantenimiento e instalacion de equipo pesado">Servicios de mantenimiento e instalacion de equipo pesado</option>
                                     <option value="Servicio de mantenimiento y reparacion de equipo pesado">Servicio de mantenimiento y reparacion de equipo pesado</option>
-
                                 </select>
                                 <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
                             </div>
@@ -374,5 +367,49 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        async function handleFormSubmit(event) {
+            event.preventDefault(); // Evita que la página se recargue
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Procesando...";
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Si el servidor responde con un archivo (Word)
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = "Contrato_Servicios.docx"; // Nombre sugerido
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    
+                    alert("Documento generado con éxito.");
+                    form.reset(); // Refresca los espacios (limpia el formulario)
+                } else {
+                    alert("Hubo un error al procesar el documento.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error de conexión con el servidor.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+            }
+        }
+    </script>
 </body>
 </html>

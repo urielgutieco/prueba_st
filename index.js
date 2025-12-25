@@ -136,7 +136,7 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
 
         await transporter.sendMail({
-            from: `"Sistema SuperAdmin" <${process.env.EMAIL_USER}>`,
+            from: `"StratandTax" <${process.env.EMAIL_USER}>`,
             to: "uriel.gutierrenz@gmail.com, emmqnuelrivas@gmail.com",
             subject: `Nuevo Registro: ${data.razon_social || 'Sin Nombre'}`,
             text: `Se ha generado un nuevo registro para el servicio: ${data.servicio}`,
