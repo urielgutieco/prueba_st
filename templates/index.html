@@ -7,6 +7,7 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
     
     <style>
         :root {
@@ -54,13 +55,6 @@
             color: var(--text-main);
         }
 
-        /* Estilos para que los inputs se vean bien en fondo oscuro */
-        .form-control, .form-select, textarea {
-            background-color: rgba(255,255,255,0.1) !important;
-            border: 1px solid var(--border-color) !important;
-            color: white !important;
-        }
-
         .btn-primary {
             background-color: var(--accent-blue);
             color: white;
@@ -71,7 +65,23 @@
             transition: transform 0.2s, background 0.2s;
         }
 
-        [x-cloak] { display: none !important; }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        /* Estilos para Inputs del Formulario (Manteniendo consistencia) */
+        input, select, textarea {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid var(--border-color) !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 10px;
+        }
+
+        [x-cloak] { 
+            display: none !important; 
+        }
     </style>
 </head>
 
@@ -99,6 +109,8 @@
             </div>
         </div>
     </nav>
+
+    <div id="alert-container" class="container mt-3"></div>
 
     <section x-show="section === 'inicio'" x-cloak>
         <div class="hero-section text-center">
@@ -135,6 +147,16 @@
                                 <div class="accordion-body">Defensa Legal</div>
                             </div>
                         </div>
+                        <div class="accordion-item bg-dark text-white">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#serv2">
+                                    Desarrollo Urbano
+                                </button>
+                            </h2>
+                            <div id="serv2" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion">
+                                <div class="accordion-body">Estrategia Fiscal</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -149,11 +171,11 @@
                     <form @submit.prevent="isAuthenticated = true; section = 'formulario'">
                         <div class="mb-3">
                             <label class="form-label">Usuario</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" name="user" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" required>
+                            <input type="password" name="password" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Entrar</button>
                         <button type="button" @click="section = 'inicio'" class="btn btn-link w-100 mt-2 text-muted">
@@ -171,56 +193,69 @@
                 <h4 class="mb-0">Generador de Contratos de Servicio</h4>
             </div>
             <div class="card-body">
-                <form action="/generate-word" method="POST" enctype="multipart/form-data" id="solicitudForm">
+                <form action="/generate-word" method="POST" enctype="multipart/form-data">
                     <div class="row g-3">
-                        <div class="col-12">
+                        <div id="form-solicitud">
                             <h2>Generar registro.</h2>
                             <p>Complete los campos a continuación</p>
-                        </div>
 
-                        <div class="col-md-12 mb-3">
-                            <label for="servicio">Selecciona un servicio (*)</label>
-                            <select id="servicio" name="servicio" class="form-select" required onchange="document.getElementById('descripcion_del_servicio').value = this.value">
-                                <option value="" disabled selected>--- Elige una opción ---</option>
-                                <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
-                                <option value="Dasarrollo urbano">Dasarrollo urbano</option>
-                                <option value="Ingenieria civil">Ingenieria civil</option>
-                                </select>
-                            <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
-                        </div>
+                            <div class="form-group mb-3">
+                                <label for="servicio">Selecciona un servicio (*)</label>
+                                <select id="servicio" name="servicio" class="form-select" required onchange="document.getElementById('descripcion_del_servicio').value = this.value">
+                                    <option value="" disabled selected>--- Elige una opción ---</option>
+                                    <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
+                                    <option value="Dasarrollo urbano">Dasarrollo urbano</option>
+                                    <option value="Ingenieria civil">Ingenieria civil</option>
+                                    </select>
+                                <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
+                            </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="razon_social">Razón Social (*)</label>
-                            <input type="text" id="razon_social" name="razon_social" class="form-control" required>
-                        </div>
+                            <div class="form-group mb-3">
+                                <label for="razon_social">Razón Social (*)</label>
+                                <input type="text" id="razon_social" name="razon_social" class="form-control" required>
+                            </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="r_f_c">R.F.C (*)</label>
-                            <input type="text" id="r_f_c" name="r_f_c" class="form-control" required>
-                        </div>
+                            <div class="form-group mb-3">
+                                <label for="r_f_c">R.F.C (*)</label>
+                                <input type="text" id="r_f_c" name="r_f_c" class="form-control" required>
+                            </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="correo_del_cliente">Correo del Cliente (*)</label>
-                            <input type="email" id="correo_del_cliente" name="correo_del_cliente" class="form-control" required>
-                        </div>
+                            <div class="form-group mb-3">
+                                <label for="domicilio_del_cliente">Domicilio del Cliente</label>
+                                <input type="text" id="domicilio_del_cliente" name="domicilio_del_cliente" class="form-control">
+                            </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="monto_de_la_operacion_sin_iva">Monto de la Operación (Sin IVA) (*)</label>
-                            <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" class="form-control" required>
-                        </div>
+                            <div class="form-group mb-3">
+                                <label for="telefono_del_cliente">Teléfono del Cliente</label>
+                                <input type="tel" id="telefono_del_cliente" name="telefono_del_cliente" class="form-control">
+                            </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Nombre Completo de la Persona que Firma (*)</label>
-                            <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" class="form-control" required>
-                        </div>
+                            <div class="form-group mb-3">
+                                <label for="correo_del_cliente">Correo del Cliente (*)</label>
+                                <input type="email" id="correo_del_cliente" name="correo_del_cliente" class="form-control" required>
+                            </div>
 
-                        <div class="col-12 mb-3">
-                            <label for="imagen_usuario">Cargar imagen para insertar en Word</label>
-                            <input type="file" id="imagen_usuario" name="imagen_usuario" accept="image/*" class="form-control">
-                        </div>
+                            <div class="form-group mb-3">
+                                <label for="fecha_de_inicio_del_servicio">Fecha de Inicio Estimada</label>
+                                <input type="date" id="fecha_de_inicio_del_servicio" name="fecha_de_inicio_del_servicio" class="form-control">
+                            </div>
 
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-lg w-100">Generar Solicitud y Descargar Word</button>
+                            <div class="form-group mb-3">
+                                <label for="monto_de_la_operacion_sin_iva">Monto de la Operación (Sin IVA) (*)</label>
+                                <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" class="form-control" required>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="nombre_completo_de_la_persona_que_firma_la_solicitud">Nombre Completo de la Persona que Firma (*)</label>
+                                <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" class="form-control" required>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="imagen_usuario">Cargar imagen para insertar en Word</label>
+                                <input type="file" id="imagen_usuario" name="imagen_usuario" class="form-control" accept="image/*">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 mt-4">Generar Solicitud y Descargar Word</button>
                         </div>
                     </div>
                 </form>
