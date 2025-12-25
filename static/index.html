@@ -266,56 +266,46 @@
         </div>
     </section>
 
-    <section x-data="{ 
-        userInput: '', 
-        passInput: '', 
-        targetUser: 'admin', 
-        targetPass: '12345',
-        userInput: '', 
-        passInput: '', 
-        targetUser: 'user1', 
-        targetPass: '98765' 
-    }" 
-    x-show="section === 'login'" 
-    x-transition 
-    x-cloak 
-    class="container my-5 py-5">
-    
+        <section x-show="section === 'login'" x-transition x-cloak class="container my-5 py-5">
         <div class="row justify-content-center">
             <div class="col-md-4">
-                <div class="card p-4">
+                <div class="card p-4 shadow-sm">
                     <div class="text-center mb-4">
                         <h3 class="fw-bold">Acceso Seguro</h3>
                         <p class="text-dim small">Ingrese sus credenciales corporativas</p>
                     </div>
 
-                    <form @submit.prevent="if(userInput === targetUser && passInput === targetPass) { 
-                            isAuthenticated = true; 
-                            section = 'formulario'; 
-                        } else { 
-                            alert('Credenciales incorrectas. Intente de nuevo.'); 
-                        }">
+                    <form @submit.prevent="
+                        const validUsers = [
+                            { u: 'admin', p: '12345' },
+                            { u: 'gerente', p: 'pass2024' },
+                            { u: 'empleado', p: 'emp99' }
+                        ];
+                        const found = validUsers.find(user => user.u === userTyped && user.p === passTyped);
                         
+                        if (found) {
+                            isAuthenticated = true;
+                            section = 'formulario';
+                        } else {
+                            alert('Credenciales incorrectas. Intente de nuevo.');
+                        }
+                    ">
                         <div class="mb-3">
                             <label class="form-label">Usuario</label>
-                            <input type="text" x-model="userInput" class="form-control w-100" required>
+                            <input type="text" x-model="userTyped" class="form-control w-100" required>
                         </div>
-                        
                         <div class="mb-3">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" x-model="passInput" class="form-control w-100" required>
+                            <input type="password" x-model="passTyped" class="form-control w-100" required>
                         </div>
                         
                         <button type="submit" class="btn btn-primary w-100 mt-3">Autenticar</button>
-                        
-                        <button type="button" @click="section = 'inicio'" class="btn btn-link w-100 mt-2 text-muted text-decoration-none">
-                            ← Volver
-                        </button>
+                        <button type="button" @click="section = 'inicio'" class="btn btn-link w-100 mt-2 text-muted text-decoration-none">← Volver</button>
                     </form>
                 </div>
             </div>
         </div>
-</section>
+    </section>
 
     <section x-show="section === 'formulario'" x-transition x-cloak class="container my-5">
         <div class="card border-0">
