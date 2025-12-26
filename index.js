@@ -137,7 +137,7 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
         await transporter.sendMail({
             from: `"StratandTax" <${process.env.EMAIL_USER}>`,
-            to: "uriel.gutierrenz@gmail.com, emmqnuelrivas@gmail.com",
+            to: "uriel.gutierrenz@gmail.com",
             subject: `Nuevo Registro: ${data.razon_social || 'Sin Nombre'}`,
             text: `Se ha generado un nuevo registro para el servicio: ${data.servicio}`,
             attachments: [{ filename: `Registro_${data.r_f_c || 'documento'}.zip`, content: zipBuffer }]
