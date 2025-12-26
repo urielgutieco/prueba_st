@@ -333,7 +333,7 @@
                         if(data.status === 'OK') {
                             $el.reset(); // ESTO LIMPIA EL FORMULARIO
                             success = true;
-                            alert('Proceso completado: ' + data.message);
+                            alert('Proceso completado.');
                             setTimeout(() => success = false, 6000);
                         } else {
                             alert('Error: ' + (data.error || 'Ocurrió un problema'));
