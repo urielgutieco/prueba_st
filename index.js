@@ -131,8 +131,6 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
             });
 
             zip.file(`Contrato_${docName}`, doc.getZip().generate({ type: 'nodebuffer' }));
-            // ... dentro de tu app.post('/generate-word') ...
-            res.json({ status: "OK", message: "Documentos generados y enviados por correo." }); 
         }
 
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
