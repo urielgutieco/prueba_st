@@ -211,7 +211,7 @@
                         <div class="col-sm-8">
                             Si buscas tranquilidad legal, Defensa Legal y Consultoría Técnica es la mejor opción.
                              Su enfoque interdisciplinario marca la diferencia: entienden tanto la ley como los detalles
-                              técnicos de fondo. Profesionales, directos y, sobre todo, efectivos.
+                             técnicos de fondo. Profesionales, directos y, sobre todo, efectivos.
                         </div>
                     </div>
                 </div>
@@ -315,7 +315,7 @@
                 <p class="text-dim small mb-0 mt-1">Llene los campos para la generación automatizada del documento</p>
             </div>
             <div class="card-body p-lg-5">
-                <form action="/generate-word" method="POST" enctype="multipart/form-data">
+                <form id="contratoForm" action="/generate-word" method="POST" enctype="multipart/form-data">
                     <div class="row g-4">
                         <div class="col-12">
                             <div class="p-4 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-10">
@@ -436,5 +436,53 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById('contratoForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Evita que la página cambie
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Efecto visual de carga
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = "Generando archivo...";
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Recibimos el archivo como un bloque de datos (blob)
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    
+                    // Creamos un link temporal para descargar el archivo
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = "Contrato_StratAndTax.docx"; 
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    
+                    alert("¡Documento generado con éxito!");
+                    form.reset(); // Limpia el formulario para el siguiente
+                } else {
+                    alert("Error en el servidor al generar el documento.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("No se pudo conectar con el servidor.");
+            } finally {
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
