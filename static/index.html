@@ -437,52 +437,41 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        document.getElementById('contratoForm').addEventListener('submit', async function(e) {
-            e.preventDefault(); // Evita que la página cambie
-            
-            const form = e.target;
-            const formData = new FormData(form);
-            const submitBtn = form.querySelector('button[type="submit"]');
-            
-            // Efecto visual de carga
-            const originalText = submitBtn.innerText;
-            submitBtn.innerText = "Generando archivo...";
-            submitBtn.disabled = true;
+<script>
+    document.getElementById('contratoForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); // Mantiene al usuario en la misma página
+        
+        const form = e.target;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        // Efecto visual de carga
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = "Procesando y enviando por correo...";
+        submitBtn.disabled = true;
 
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData
-                });
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
 
-                if (response.ok) {
-                    // Recibimos el archivo como un bloque de datos (blob)
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    
-                    // Creamos un link temporal para descargar el archivo
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = "Contrato_StratAndTax.docx"; 
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    window.URL.revokeObjectURL(url);
-                    
-                    alert("¡Documento generado con éxito!");
-                    form.reset(); // Limpia el formulario para el siguiente
-                } else {
-                    alert("Error en el servidor al generar el documento.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("No se pudo conectar con el servidor.");
-            } finally {
-                submitBtn.innerText = originalText;
-                submitBtn.disabled = false;
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("¡Éxito! Los 5 documentos han sido comprimidos y enviados al correo proporcionado.");
+                form.reset(); // Opcional: limpia el formulario
+            } else {
+                alert("Error: " + (result.error || "No se pudo procesar el envío."));
             }
-        });
-    </script>
+        } catch (error) {
+            console.error("Error:", error);
+            alert("No se pudo conectar con el servidor.");
+        } finally {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+</script>
 </body>
 </html>
