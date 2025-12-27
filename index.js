@@ -72,7 +72,7 @@ const SERVICIO_TO_DIR = {
     "Servicio de mantenimiento y reparacion de equipo pesado": "mantenimiento_reparacion_equipo_pesado"
 };
 
-const DOCUMENT_NAMES = ['plantilla_solicitud.docx', '1.docx', '2.docx', '3.docx', '4.docx'];
+const DOCUMENT_NAMES = ['Acta_de_entrega_recepcion.docx', 'Bitacora_de_avances_de_obra.docx', 'Contrato_de_prestación_de_servicios.docx', 'Cotizacion_de_servicios.docx', 'Narrativas_de_materialidad.docx', 'Orden_de_servicio.docx'];
 
 /* =========================
    TRANSPORTER (REUTILIZABLE)
