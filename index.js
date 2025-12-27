@@ -106,7 +106,7 @@ app.post('/login', (req, res) => {
     // Aquí comparamos contra las variables de entorno de Render
     // Puedes agregar más usuarios siguiendo esta lógica
     const isValid = (u === process.env.ADMIN_USER && p === process.env.ADMIN_PASS) || 
-                    (u === 'gerente' && p === 'pass2025'); // Ejemplo mixto
+                    (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2);
 
     if (isValid) {
         res.json({ success: true });
