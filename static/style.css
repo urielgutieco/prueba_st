@@ -156,7 +156,7 @@ button, .btn-submit {
     cursor: pointer;
     font-weight: 600;
     font-size: 1rem;
-    transition: transform 0.1s, background-color 0.2s;
+    transition: transform 0.1s, background 0.2s;
 }
 
 button:hover {
