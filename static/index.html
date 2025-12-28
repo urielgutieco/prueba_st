@@ -552,11 +552,26 @@
         </div>
     </section>
 
-    <footer class="text-center py-5 border-top border-white border-opacity-10 mt-5">
-        <p class="text-dim small mb-0">&copy; 2026 STRAT AND TAX | Soporte Legal e Infraestructura Digital.</p>
-        <p class="text-dim small mb-0">&copy; By ZEON Org. Arquitectura Digital</p>
-        <img src="zeon.jpeg" alt="StratandTax Logo" style="height: 40px; width: auto;">
-    </footer>
+<footer class="text-center py-5 border-top border-white border-opacity-10 mt-5" style="background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(5px);">
+    <div class="mb-4 d-flex justify-content-center align-items-center gap-4">
+        <img src="zeon.jpeg" alt="ZEON Logo" style="height: 35px; width: auto; filter: grayscale(1) brightness(1.5); opacity: 0.8; transition: 0.3s;" onmouseover="this.style.opacity='1'; this.style.filter='grayscale(0)'" onmouseout="this.style.opacity='0.8'; this.style.filter='grayscale(1)'">
+    </div>
+
+    <div class="footer-content">
+        <p class="mb-1" style="color: var(--text-main); font-weight: 700; letter-spacing: 1px; font-size: 0.85rem;">
+            STRAT AND TAX
+        </p>
+        <p class="text-dim small mb-3" style="opacity: 0.7;">
+            Soporte Legal e Infraestructura Digital &copy; 2026
+        </p>
+        
+        <hr style="width: 50px; border-color: var(--primary); margin: 1.5rem auto; opacity: 0.3;">
+        
+        <p class="small mb-0" style="color: var(--text-dim); font-size: 0.75rem; letter-spacing: 0.5px;">
+            Arquitectura Digital por <span style="color: #ffffff; font-weight: 600;">ZEON Org.</span>
+        </p>
+    </div>
+</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
