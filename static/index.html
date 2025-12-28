@@ -204,28 +204,12 @@
         color: var(--accent-blue) !important;
     }
 
-    /* ESTILOS PANEL ADMIN ADICIONALES */
-    .admin-nav-item {
-        padding: 10px 15px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.3s;
-        color: var(--text-dim);
-    }
-    .admin-nav-item:hover, .admin-nav-item.active {
-        background: rgba(59, 130, 246, 0.2);
-        color: #fff;
-    }
-    .table { color: var(--text-main); border-color: var(--border-color); }
-    .table thead { background: rgba(255,255,255,0.05); }
-
     [x-cloak] { display: none !important; }
 </style>
 </head>
 
 <body x-data="{ 
     section: 'inicio', 
-    adminSubSection: 'usuarios',
     isAuthenticated: localStorage.getItem('isAuth') === 'true',
     userTyped: '',
     passTyped: '',
@@ -299,7 +283,6 @@
                     </template>
                     <template x-if="isAuthenticated">
                         <div class="d-flex flex-column flex-lg-row align-items-center">
-                            <a class="nav-link px-3" href="#" @click="section = 'admin'">Panel Admin</a>
                             <a class="nav-link px-3" href="#" @click="section = 'formulario'">Generar Contrato</a>
                             <a class="nav-link text-warning ms-lg-3" href="#" @click="logout()">Cerrar Sesión</a>
                         </div>
@@ -419,80 +402,6 @@
                         <button type="submit" class="btn btn-primary w-100 mb-3">Autenticar Sistema</button>
                         <button type="button" @click="section = 'inicio'" class="btn btn-link w-100 text-dim text-decoration-none small">← Volver al inicio</button>
                     </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section x-show="section === 'admin'" x-transition x-cloak class="container my-5">
-        <div class="row g-4">
-            <div class="col-lg-3">
-                <div class="card p-3 h-100">
-                    <h5 class="fw-bold mb-4 px-2">Administración</h5>
-                    <div class="d-grid gap-2">
-                        <div class="admin-nav-item" :class="adminSubSection === 'usuarios' ? 'active' : ''" @click="adminSubSection = 'usuarios'">👥 Gestionar Usuarios</div>
-                        <div class="admin-nav-item" :class="adminSubSection === 'correos' ? 'active' : ''" @click="adminSubSection = 'correos'">📧 Gestionar Correos</div>
-                        <div class="admin-nav-item" :class="adminSubSection === 'plantillas' ? 'active' : ''" @click="adminSubSection = 'plantillas'">📄 Cargar Plantillas</div>
-                        <div class="admin-nav-item" :class="adminSubSection === 'membresias' ? 'active' : ''" @click="adminSubSection = 'membresias'">💎 Membresías</div>
-                        <div class="admin-nav-item" :class="adminSubSection === 'facturacion' ? 'active' : ''" @click="adminSubSection = 'facturacion'">💰 Facturaciones</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-9">
-                <div class="card p-4">
-                    <div x-show="adminSubSection === 'usuarios'">
-                        <h4 class="fw-bold mb-4">Gestión de Usuarios</h4>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead>
-                                <tbody>
-                                    <tr><td>Demo User</td><td>demo@stratandtax.com</td><td>Admin</td><td><button class="btn btn-sm btn-outline-primary">Editar</button></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div x-show="adminSubSection === 'correos'">
-                        <h4 class="fw-bold mb-4">Configuración de Correos</h4>
-                        <div class="mb-3">
-                            <label class="form-label">Servidor SMTP</label>
-                            <input type="text" class="form-control" placeholder="smtp.ejemplo.com">
-                        </div>
-                        <button class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-
-                    <div x-show="adminSubSection === 'plantillas'">
-                        <h4 class="fw-bold mb-4">Cargar Plantillas de Contrato</h4>
-                        <div class="mb-4 p-4 border border-dashed rounded-4 text-center">
-                            <label class="form-label d-block">Subir nuevo archivo (.docx)</label>
-                            <input type="file" class="form-control mb-3">
-                            <button class="btn btn-primary">Cargar al Servidor</button>
-                        </div>
-                    </div>
-
-                    <div x-show="adminSubSection === 'membresias'">
-                        <h4 class="fw-bold mb-4">Sistema de Membresías</h4>
-                        <div class="row g-3">
-                            <div class="col-md-4"><div class="card p-3 text-center"><h6>Básico</h6><p class="mb-0">10 Usuarios</p></div></div>
-                            <div class="col-md-4"><div class="card p-3 text-center border-primary"><h6>Premium</h6><p class="mb-0">Ilimitado</p></div></div>
-                        </div>
-                    </div>
-
-                    <div x-show="adminSubSection === 'facturacion'">
-                        <h4 class="fw-bold mb-4">Facturaciones y Montos</h4>
-                        <div class="mb-4">
-                            <button class="btn btn-success mb-3">Generar Facturación de Montos</button>
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead><tr><th>Folio</th><th>Fecha</th><th>Monto</th><th>Estado</th></tr></thead>
-                                    <tbody>
-                                        <tr><td>#FAC-001</td><td>2025-12-27</td><td>$15,000.00</td><td><span class="badge bg-success">Pagado</span></td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
