@@ -293,121 +293,93 @@
     </nav>
 
     <section x-show="section === 'inicio'" x-transition x-cloak>
-    <div class="hero-section" style="background: linear-gradient(135deg, #0d6efd 0%, #003d99 100%); padding: 100px 0; color: white; text-align: center;">
-        <div class="container">
-            <h1 class="mb-4 fw-bold">Infraestructura<br>de Alto Nivel</h1>
-            <p class="lead opacity-75 mx-auto mb-5" style="max-width: 650px; font-size: 1.25rem;">
-                Digitalización avanzada de procesos técnicos y jurídicos para la industria de la construcción y el desarrollo urbano.
-            </p>
-            <button @click="isAuthenticated ? section = 'formulario' : section = 'login'" class="btn btn-light btn-lg px-5 fw-bold shadow-sm transition-all hover-lift">
-                Iniciar Gestión de Contrato
-            </button>
+        <div class="hero-section">
+            <div class="container">
+                <h1 class="mb-4">Infraestructura<br>de Alto Nivel</h1>
+                <p class="lead text-dim mx-auto mb-5" style="max-width: 650px; font-size: 1.25rem;">
+                    Digitalización avanzada de procesos técnicos y jurídicos para la industria de la construcción y el desarrollo urbano.
+                </p>
+                <button @click="isAuthenticated ? section = 'formulario' : section = 'login'" class="btn btn-primary btn-lg px-5">
+                    Iniciar Gestión de Contrato
+                </button>
+            </div>
         </div>
-    </div>
 
-    <div class="container py-5">
-        <h2 class="text-center fw-bold mb-5">Nuestros Servicios Especializados</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm transition-all hover-lift overflow-hidden">
-                    <img src="imagen1.jpg" class="card-img-top" alt="Defensa Fiscal" style="height: 200px; object-fit: cover;">
-                    <div class="card-body p-4">
-                        <h3 class="h5 fw-bold">Defensa Fiscal</h3>
-                        <p class="text-muted small">Contamos con un equipo de especialistas dedicados a la impugnación de actos de autoridad y resolución de controversias ante el SAT. Transformamos problemas legales en soluciones estratégicas.</p>
-                    </div>
+        <div class="container py-5">
+            <h2 class="text-center fw-bold mb-5">Nuestros Servicios Especializados</h2>
+            <div class="services-grid">
+                <div class="service-item">
+                    <img src="imagen1.jpg" alt="Consultoría">
+                    <h3>Defensa Fiscal</h3>
+                    <p class="text-dim">Contamos con un equipo de especialistas de primer nivel dedicados
+                         a la impugnación de actos de autoridad, atención de auditorías y resolución de controversias ante el SAT y autoridades
+                         estatales. Transformamos los problemas legales en soluciones estratégicas, garantizando siempre el estricto cumplimiento
+                         de la ley y la preservación de sus activos.</p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm transition-all hover-lift overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Consultoría" style="height: 200px; object-fit: cover;">
-                    <div class="card-body p-4">
-                        <h3 class="h5 fw-bold">Consultoría Fiscal</h3>
-                        <p class="text-muted small">Respaldamos la toma de decisiones con criterios de expertos. Análisis exhaustivo y soluciones a medida para navegar el sistema tributario con total confianza y ética.</p>
-                    </div>
+                <div class="service-item">
+                    <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=80" alt="Auditorías">
+                    <h3>Consultoría Fiscal</h3>
+                    <p class="text-dim">Respaldamos la toma de decisiones de su empresa con el criterio de expertos líderes en la materia.
+                         Nuestro servicio de Consultoría Fiscal ofrece un análisis exhaustivo y soluciones a medida para navegar el sistema
+                          tributario con total confianza. Excelencia, ética y visión estratégica al servicio de su patrimonio.</p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm transition-all hover-lift overflow-hidden">
-                    <img src="imagen3.jpg" class="card-img-top" alt="Planificación" style="height: 200px; object-fit: cover;">
-                    <div class="card-body p-4">
-                        <h3 class="h5 fw-bold">Planificación Financiera</h3>
-                        <p class="text-muted small">Optimice su capital con especialistas. Integramos análisis fiscal, gestión de inversiones y previsión de metas ejecutadas por profesionales con trayectoria comprobada.</p>
-                    </div>
+                <div class="service-item">
+                    <img src="imagen3.jpg" alt="Planificación">
+                    <h3>Planificación Financiera</h3>
+                    <p class="text-dim">Optimice su capital con el respaldo de los mejores especialistas del sector. Nuestro servicio de
+                         planificación financiera integra análisis fiscal, gestión de inversiones y previsión de metas, garantizando soluciones
+                          integrales ejecutadas por profesionales con trayectoria comprobada.</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container my-5 pb-5">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-6">
-                <h5 class="text-primary text-uppercase fw-bold mb-3">Perfil Corporativo</h5>
-                <h2 class="display-6 fw-bold mb-4">Experiencia en Grandes Escalas</h2>
-                <p class="text-dim mb-4">Brindamos certeza jurídica y técnica en cada etapa de la obra, desde la planificación hasta la entrega final.</p>
-                
-                <a href="tel:3313102530" class="text-decoration-none">
-                    <div class="card bg-light border-0 p-3 mb-3 d-flex flex-row align-items-center hover-shadow transition-all">
-                        <span class="fs-4 me-3">📞</span> 
-                        <div><strong class="text-dark">Contáctanos</strong><br><small class="text-primary">33 1310 2530</small></div>
+        <div class="container my-5 pb-5">
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6">
+                    <h5 class="text-primary text-uppercase fw-bold mb-3">Perfil Corporativo</h5>
+                    <h2 class="display-6 fw-bold mb-4">Experiencia en Grandes Escalas</h2>
+                    <p class="text-dim mb-4">Brindamos certeza jurídica y técnica en cada etapa de la obra, desde la planificación hasta la entrega final.</p>
+                    <div class="card bg-opacity-10 border-0 p-3 mb-3 d-flex flex-row align-items-center">
+                        <span class="fs-4 me-3">📞</span> <div><strong>Contactanos</strong><br><small class="text-dim">3313102530</small></div>
                     </div>
-                </a>
-                
-                <a href="mailto:contacto@stratandtax.com" class="text-decoration-none">
-                    <div class="card bg-light border-0 p-3 d-flex flex-row align-items-center hover-shadow transition-all">
-                        <span class="fs-4 me-3">📧</span> 
-                        <div><strong class="text-dark">contacto@stratandtax.com</strong><br><small class="text-primary">Soporte Corporativo</small></div>
+                    <div class="card bg-opacity-10 border-0 p-3 d-flex flex-row align-items-center">
+                        <span class="fs-4 me-3">📧</span> <div><strong>contacto@stratandtax.com</strong><br><small class="text-dim">Soporte Corporativo</small></div>
                     </div>
-                </a>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="accordion shadow-sm" id="serviciosAccordion">
-                    <div class="accordion-item border-0 mb-2">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button fw-bold rounded shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#serv1">
-                                Automatización Contractual Digitalizada
-                            </button>
-                        </h2>
-                        <div id="serv1" class="accordion-collapse collapse show" data-bs-parent="#serviciosAccordion">
-                            <div class="accordion-body text-dim bg-white">
-                                Combinamos la experiencia de especialistas legales de alto perfil con las herramientas tecnológicas más avanzadas del mercado. Logre la creación y firma de contratos 100% digital.
+                </div>
+                <div class="col-lg-6">
+                    <div class="accordion" id="serviciosAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#serv1">
+                                    Automatización Contractual Digitalizada.
+                                </button>
+                            </h2>
+                            <div id="serv1" class="accordion-collapse collapse show" data-bs-parent="#serviciosAccordion">
+                                <div class="accordion-body text-dim">
+                                    Combinamos la experiencia de especialistas legales de alto perfil con las herramientas tecnológicas más avanzadas del mercado. 
+                                    Logre la creación, firma y seguimiento de contratos de forma 100% digital, asegurando que cada documento cumpla con los más 
+                                    altos estándares de cumplimiento, supervisado siempre por manos expertas.
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="accordion-item border-0">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-bold rounded shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#serv2">
-                                Estructura de Materialidad Automatizada
-                            </button>
-                        </h2>
-                        <div id="serv2" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion">
-                            <div class="accordion-body text-dim bg-white">
-                                Combinamos el rigor analítico de consultores expertos con herramientas de automatización para mitigar riesgos y asegurar la trazabilidad absoluta de su operación comercial.
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#serv2">
+                                    Estructura de Materialidad Automatizada
+                                </button>
+                            </h2>
+                            <div id="serv2" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion">
+                                <div class="accordion-body text-dim">
+                                    Combinamos el rigor analítico de consultores expertos con herramientas de automatización de vanguardia para mitigar riesgos, 
+                                    optimizar tiempos y asegurar la trazabilidad absoluta de su operación comercial. Calidad profesional al servicio de la agilidad empresarial.
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<style>
-    .hover-lift {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .hover-lift:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
-    }
-    .hover-shadow:hover {
-        background-color: #f1f4f9 !important;
-        cursor: pointer;
-    }
-    .transition-all {
-        transition: all 0.3s ease;
-    }
-</style>
+    </section>
 
     <section x-show="section === 'login'" x-transition x-cloak class="container my-5 py-5">
         <div class="row justify-content-center">
