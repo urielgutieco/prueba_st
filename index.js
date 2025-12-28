@@ -11,9 +11,64 @@ const helmet = require('helmet');
 const compression = require('compression');
 require('dotenv').config();
 
+// --- INICIO DE NUEVAS DEPENDENCIAS ---
+const { Pool } = require('pg');
+const cron = require('node-cron');
+// --- FIN DE NUEVAS DEPENDENCIAS ---
+
 const app = express();
-// CORRECCIÓN 1: Definir PORT desde process.env para que Render pueda conectar
 const PORT = process.env.PORT || 10000;
+
+/* =========================
+   CONFIGURACIÓN POSTGRESQL (PERSISTENCIA)
+========================= */
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
+
+// Crear tabla automáticamente si no existe al iniciar
+const setupDB = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS registro_montos (
+                id SERIAL PRIMARY KEY,
+                monto DECIMAL(15, 2) NOT NULL,
+                fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+    } catch (err) { console.error("Error DB Setup:", err); }
+};
+setupDB();
+
+/* =========================
+   FUNCIONES DE REPORTE POR CORREO
+========================= */
+const enviarReporteSumatoria = async (periodo) => {
+    try {
+        const res = await pool.query("SELECT SUM(monto) as total FROM registro_montos");
+        const total = res.rows[0].total || 0;
+
+        await transporter.sendMail({
+            from: `"Sistema de Facturación" <${process.env.EMAIL_USER}>`,
+            to: process.env.EMAIL_REPORTE,
+            subject: `Reporte de Facturación Acumulada - ${periodo}`,
+            text: `El total acumulado registrado para facturación es: $${total} (Sin IVA).\nPeriodo: ${periodo}`
+        });
+    } catch (error) { console.error("Error en reporte cron:", error); }
+};
+
+/* =========================
+   TAREAS PROGRAMADAS (CRON)
+========================= */
+// Cada día a las 23:59
+cron.schedule('59 23 * * *', () => enviarReporteSumatoria('Diario'));
+// Cada semana (Domingo 23:59)
+cron.schedule('59 23 * * 0', () => enviarReporteSumatoria('Semanal'));
+// Cada quince días (Día 15 y 30 a las 23:59)
+cron.schedule('59 23 15,30 * *', () => enviarReporteSumatoria('Quincenal'));
+// Día 5 de cada mes a las 09:00 AM
+cron.schedule('0 9 5 * *', () => enviarReporteSumatoria('Mensual (Día 5)'));
 
 /* =========================
    MIDDLEWARES
@@ -94,17 +149,10 @@ const transporter = nodemailer.createTransport({
    RUTAS
 ========================= */
 
-// CORRECCIÓN 2: Ruta raíz para que Render confirme que el servicio está activo (Health Check)
 app.use(express.static(path.join(__dirname, 'static')));
 
-/* =========================
-   RUTA DE AUTENTICACIÓN
-========================= */
 app.post('/login', (req, res) => {
     const { u, p } = req.body;
-
-    // Aquí comparamos contra las variables de entorno de Render
-    // Puedes agregar más usuarios siguiendo esta lógica
     const isValid = (u === process.env.ADMIN_USER && p === process.env.ADMIN_PASS) || 
                     (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2);
 
@@ -118,6 +166,14 @@ app.post('/login', (req, res) => {
 app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => {
     try {
         const data = req.body;
+
+        // --- NUEVA LÓGICA DE PERSISTENCIA ---
+        const montoRecibido = parseFloat(data.monto_de_la_operacion_sin_iva);
+        if (!isNaN(montoRecibido)) {
+            await pool.query("INSERT INTO registro_montos (monto) VALUES ($1)", [montoRecibido]);
+        }
+        // ------------------------------------
+
         const folder = SERVICIO_TO_DIR[data.servicio];
         if (!folder) return res.status(400).json({ error: "Servicio no reconocido." });
 
@@ -153,22 +209,18 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
 
-/* =========================
-   ENVÍO DE CORREO PROTEGIDO (MULTIPLE)
-========================= */
-// Creamos una lista de correos combinando las variables de entorno
-const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2].filter(Boolean).join(', ');
+        const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2].filter(Boolean).join(', ');
 
-await transporter.sendMail({
-    from: `"StratandTax" <${process.env.EMAIL_USER}>`,
-    to: destinatarios, // Enviará a ambos correos automáticamente
-    subject: `Nuevo Registro: ${data.razon_social || 'Sin Nombre'}`,
-    text: `Se ha generado un nuevo registro para el servicio: ${data.servicio}`,
-    attachments: [{ 
-        filename: `Registro_${data.r_f_c || 'documento'}.zip`, 
-        content: zipBuffer 
-    }]
-});
+        await transporter.sendMail({
+            from: `"StratandTax" <${process.env.EMAIL_USER}>`,
+            to: destinatarios, 
+            subject: `Nuevo Registro: ${data.razon_social || 'Sin Nombre'}`,
+            text: `Se ha generado un nuevo registro para el servicio: ${data.servicio}`,
+            attachments: [{ 
+                filename: `Registro_${data.r_f_c || 'documento'}.zip`, 
+                content: zipBuffer 
+            }]
+        });
 
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
 

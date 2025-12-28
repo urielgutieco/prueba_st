@@ -32,6 +32,7 @@
     "helmet": "^8.1.0",
     "jszip": "^3.10.1",
     "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.12",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
@@ -41,5 +42,8 @@
     "pizzip": "^3.2.0",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
+  },
+  "overrides": {
+    "xmldom": "npm:@xmldom/xmldom@^0.8.10"
   }
 }
