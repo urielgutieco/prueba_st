@@ -204,6 +204,19 @@
         color: var(--accent-blue) !important;
     }
 
+    /* ADMIN STYLES */
+    .admin-nav-link {
+        color: var(--text-dim);
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .admin-nav-link.active {
+        background: var(--accent-blue);
+        color: white;
+    }
+
     [x-cloak] { display: none !important; }
 </style>
 </head>
@@ -211,12 +224,14 @@
 <body x-data="{ 
     section: 'inicio', 
     isAuthenticated: localStorage.getItem('isAuth') === 'true',
+    isAdmin: localStorage.getItem('isAdmin') === 'true',
     userTyped: '',
     passTyped: '',
     timeout: null,
     inactivityTime: 10 * 60 * 1000,
     loading: false, 
     success: false,
+    adminTab: 'usuarios',
 
     init() {
         if (this.isAuthenticated) {
@@ -235,6 +250,7 @@
     },
 
     login() {
+        // Simulación de login para fines de visualización
         fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -244,19 +260,34 @@
         .then(data => {
             if (data.success) {
                 this.isAuthenticated = true;
+                this.isAdmin = data.role === 'admin';
                 localStorage.setItem('isAuth', 'true');
-                this.section = 'formulario';
+                localStorage.setItem('isAdmin', this.isAdmin ? 'true' : 'false');
+                this.section = this.isAdmin ? 'admin_panel' : 'formulario';
                 this.resetTimer();
             } else {
                 alert('Credenciales incorrectas');
             }
         })
-        .catch(() => alert('Error de conexión'));
+        .catch(() => {
+            // Hardcode para demostración local si el fetch falla
+            if(this.userTyped === 'admin' && this.passTyped === 'admin123') {
+                this.isAuthenticated = true;
+                this.isAdmin = true;
+                localStorage.setItem('isAuth', 'true');
+                localStorage.setItem('isAdmin', 'true');
+                this.section = 'admin_panel';
+            } else {
+                alert('Error de conexión o credenciales inválidas');
+            }
+        });
     },
 
     logout() {
         this.isAuthenticated = false;
+        this.isAdmin = false;
         localStorage.removeItem('isAuth');
+        localStorage.removeItem('isAdmin');
         this.section = 'inicio';
         if (this.timeout) clearTimeout(this.timeout);
     }
@@ -283,7 +314,12 @@
                     </template>
                     <template x-if="isAuthenticated">
                         <div class="d-flex flex-column flex-lg-row align-items-center">
-                            <a class="nav-link px-3" href="#" @click="section = 'formulario'">Generar Contrato</a>
+                            <template x-if="!isAdmin">
+                                <a class="nav-link px-3" href="#" @click="section = 'formulario'">Generar Contrato</a>
+                            </template>
+                            <template x-if="isAdmin">
+                                <a class="nav-link px-3 text-info" href="#" @click="section = 'admin_panel'">Panel Control</a>
+                            </template>
                             <a class="nav-link text-warning ms-lg-3" href="#" @click="logout()">Cerrar Sesión</a>
                         </div>
                     </template>
@@ -299,7 +335,7 @@
                 <p class="lead text-dim mx-auto mb-5" style="max-width: 650px; font-size: 1.25rem;">
                     Digitalización avanzada de procesos técnicos y jurídicos para la industria de la construcción y el desarrollo urbano.
                 </p>
-                <button @click="isAuthenticated ? section = 'formulario' : section = 'login'" class="btn btn-primary btn-lg px-5">
+                <button @click="isAuthenticated ? (isAdmin ? section='admin_panel' : section='formulario') : section = 'login'" class="btn btn-primary btn-lg px-5">
                     Iniciar Gestión de Contrato
                 </button>
             </div>
@@ -387,7 +423,7 @@
                 <div class="card p-4">
                     <div class="text-center mb-4">
                         <h3 class="fw-bold">Acceso Seguro</h3>
-                        <p class="text-dim small">Portal Administrativo Strat and Tax</p>
+                        <p class="text-dim small">Portal Strat and Tax</p>
                     </div>
 
                     <form @submit.prevent="login()">
@@ -407,7 +443,7 @@
         </div>
     </section>
 
-    <section x-show="section === 'formulario'" x-transition x-cloak class="container my-5">
+    <section x-show="section === 'formulario' && !isAdmin" x-transition x-cloak class="container my-5">
         <div class="card border-0">
             <div class="card-header text-center py-4">
                 <h3 class="mb-0 fw-bold text-white">Gestión de Contratos</h3>
@@ -562,9 +598,114 @@
         </div>
     </section>
 
+    <section x-show="section === 'admin_panel' && isAdmin" x-transition x-cloak class="container my-5">
+        <div class="row g-4">
+            <div class="col-lg-3">
+                <div class="card p-3 h-100">
+                    <h5 class="fw-bold mb-4 text-primary px-2">ADMIN PANEL</h5>
+                    <div class="d-flex flex-column gap-2">
+                        <div @click="adminTab = 'usuarios'" :class="adminTab === 'usuarios' ? 'admin-nav-link active' : 'admin-nav-link'">👥 Gestionar Usuarios</div>
+                        <div @click="adminTab = 'correos'" :class="adminTab === 'correos' ? 'admin-nav-link active' : 'admin-nav-link'">📧 Gestionar Correos</div>
+                        <div @click="adminTab = 'plantillas'" :class="adminTab === 'plantillas' ? 'admin-nav-link active' : 'admin-nav-link'">📄 Cargar Plantillas</div>
+                        <div @click="adminTab = 'membresias'" :class="adminTab === 'membresias' ? 'admin-nav-link active' : 'admin-nav-link'">💎 Membresías</div>
+                        <div @click="adminTab = 'facturacion'" :class="adminTab === 'facturacion' ? 'admin-nav-link active' : 'admin-nav-link'">💰 Facturaciones</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="card p-4 min-vh-50">
+                    <div x-show="adminTab === 'usuarios'">
+                        <h4 class="fw-bold mb-4">Gestión de Usuarios del Sistema</h4>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover border-secondary">
+                                <thead>
+                                    <tr><th>ID</th><th>Nombre</th><th>Rol</th><th>Estatus</th><th>Acción</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>#001</td><td>Admin Strat</td><td>SuperAdmin</td><td><span class="badge bg-success">Activo</span></td><td><button class="btn btn-sm btn-outline-primary">Editar</button></td></tr>
+                                    <tr><td>#002</td><td>Consultor 1</td><td>Usuario</td><td><span class="badge bg-success">Activo</span></td><td><button class="btn btn-sm btn-outline-primary">Editar</button></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-primary btn-sm mt-3">+ Agregar Nuevo Usuario</button>
+                    </div>
+
+                    <div x-show="adminTab === 'correos'">
+                        <h4 class="fw-bold mb-4">Configuración de Correos Salientes</h4>
+                        <div class="mb-3">
+                            <label class="form-label">Servidor SMTP</label>
+                            <input type="text" class="form-control" placeholder="smtp.stratandtax.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo de Notificaciones</label>
+                            <input type="email" class="form-control" placeholder="noreply@stratandtax.com">
+                        </div>
+                        <button class="btn btn-primary">Guardar Configuración</button>
+                    </div>
+
+                    <div x-show="adminTab === 'plantillas'">
+                        <h4 class="fw-bold mb-4">Repositorio de Plantillas (.docx)</h4>
+                        <div class="border border-dashed border-secondary p-5 text-center rounded-4 mb-4" style="border-style: dashed !important;">
+                            <p class="text-dim">Arrastra aquí tus plantillas de Word para cargarlas al sistema</p>
+                            <input type="file" class="form-control w-50 mx-auto">
+                        </div>
+                        <h6 class="text-white mb-3">Plantillas Actuales:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent text-dim border-secondary d-flex justify-content-between">
+                                Contrato_Prestacion_Servicios.docx <span class="text-primary">V.2.1</span>
+                            </li>
+                            <li class="list-group-item bg-transparent text-dim border-secondary d-flex justify-content-between">
+                                Anexo_Tecnico_Construccion.docx <span class="text-primary">V.1.0</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div x-show="adminTab === 'membresias'">
+                        <h4 class="fw-bold mb-4">Control de Membresías y Accesos</h4>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="card bg-primary bg-opacity-10 p-3 text-center">
+                                    <h6>Plan Básico</h6>
+                                    <p class="h3">$0</p>
+                                    <small>10 Contratos/Mes</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-primary p-3 text-center">
+                                    <h6 class="text-primary">Plan Pro</h6>
+                                    <p class="h3">$1,500</p>
+                                    <small>Ilimitado</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-show="adminTab === 'facturacion'">
+                        <h4 class="fw-bold mb-4">Módulo de Facturación Global</h4>
+                        <div class="row mb-4 text-center">
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-dark">
+                                    <small class="text-dim">Total Mes</small>
+                                    <div class="h4 text-success">$45,200.00</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-4 bg-dark">
+                                    <small class="text-dim">Pendientes</small>
+                                    <div class="h4 text-warning">12 Facturas</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary w-100 py-3">Generar Reporte de Facturación Mensual</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
 <footer class="text-center py-5 border-top border-white border-opacity-10 mt-5" style="background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(5px);">
     <div class="mb-4 d-flex justify-content-center align-items-center gap-4">
-        <img src="zeon.jpeg" alt="ZEON Logo" style="height: 45px; width: auto; filter: grayscale(1) brightness(1.5); opacity: 0.8; transition: 0.3s;" onmouseover="this.style.opacity='1'; this.style.filter='grayscale(0)'" onmouseout="this.style.opacity='0.8'; this.style.filter='grayscale(1)'">
+        <img src="zeon.jpeg" @dblclick="section = 'login'" alt="ZEON Logo" style="height: 45px; width: auto; filter: grayscale(1) brightness(1.5); opacity: 0.8; transition: 0.3s; cursor:pointer;" onmouseover="this.style.opacity='1'; this.style.filter='grayscale(0)'" onmouseout="this.style.opacity='0.8'; this.style.filter='grayscale(1)'">
     </div>
 
     <div class="footer-content">
@@ -575,7 +716,7 @@
             Soporte Legal e Infraestructura Digital &copy; 2026
         </p>
         
-        <hr style="width: 50px; border-color: var(--primary); margin: 1.5rem auto; opacity: 0.3;">
+        <hr style="width: 50px; border-color: var(--accent-blue); margin: 1.5rem auto; opacity: 0.3;">
         
         <p class="small mb-0" style="color: var(--text-dim); font-size: 0.75rem; letter-spacing: 0.5px;">
             Arquitectura Digital por <span style="color: #ffffff; font-weight: 600;">ZEON Org.</span>
