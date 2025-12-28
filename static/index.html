@@ -6,146 +6,204 @@
     <title>Portal de Servicios y Contratos | Strat and Tax</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
-    
 <style>
-    /* DEFINICIÓN DE VARIABLES GLOBALES: Centraliza colores y estilos para facilitar cambios rápidos */
     :root {
-        --bg-dark: #020617;          /* Fondo principal oscuro (estilo Deep Blue) */
-        --accent-blue: #3b82f6;      /* Azul brillante para llamadas a la acción */
-        --accent-light: #60a5fa;     /* Azul claro para estados 'hover' y realces */
-        --text-main: #f8fafc;        /* Blanco grisáceo para lectura cómoda */
-        --text-dim: #8aa6cd;         /* Texto secundario o leyendas */
-        --card-bg: rgba(30, 41, 59, 0.5); /* Fondo traslúcido para efecto de cristal */
-        --border-color: rgba(255, 255, 255, 0.08); /* Bordes sutiles casi invisibles */
-        --input-focus: #3b82f6;      /* Color de resalte al hacer clic en campos */
+        --bg-dark: #020617;
+        --accent-blue: #3b82f6;
+        --accent-glow: rgba(59, 130, 246, 0.5);
+        --text-main: #f8fafc;
+        --text-dim: #94a3b8;
+        --card-bg: rgba(15, 23, 42, 0.6);
+        --border-color: rgba(255, 255, 255, 0.1);
+        --input-bg: rgba(2, 6, 23, 0.8);
     }
 
-    /* ESTILOS BASE: Configuración de tipografía y color de fondo general */
     body {
         background-color: var(--bg-dark);
         color: var(--text-main);
-        font-family: 'Plus Jakarta Sans', sans-serif; /* Fuente moderna de estilo corporativo */
-        letter-spacing: -0.01em; /* Ajuste fino de espaciado para legibilidad profesional */
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        overflow-x: hidden;
     }
 
-    /* BARRA DE NAVEGACIÓN: Implementa efecto 'Blur' (Glassmorphism) */
-    .navbar {
-        background-color: rgba(2, 6, 23, 0.8); /* Fondo semi-transparente */
-        backdrop-filter: blur(12px);           /* Desenfoque del fondo al hacer scroll */
-        border-bottom: 1px solid var(--border-color);
-        padding: 15px 0;
-    }
-
-    /* LOGOTIPO / MARCA: Énfasis en peso visual y color de realce */
-    .navbar-brand {
-        font-weight: 800;
-        letter-spacing: -1px;
-        color: var(--accent-light) !important;
-    }
-
-    /* SECCIÓN PRINCIPAL (HERO): Uso de gradientes radiales para dar profundidad 3D */
-    .hero-section {
+    /* Fondo animado sutil */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
         background: 
-            radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-            radial-gradient(circle at 10% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 40%);
-        padding: 140px 0 80px;
+            radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.05) 0%, transparent 40%);
+        z-index: -1;
+    }
+
+    /* NAVBAR */
+    .navbar {
+        background: rgba(2, 6, 23, 0.8) !important;
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--border-color);
+        padding: 0.8rem 0;
+    }
+
+    .navbar-brand img {
+        transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover img {
+        transform: scale(1.05);
+    }
+
+    .nav-link {
+        font-weight: 600;
+        color: var(--text-dim) !important;
+        transition: color 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: var(--accent-blue) !important;
+    }
+
+    /* HERO SECTION */
+    .hero-section {
+        padding: 120px 0 60px;
         text-align: center;
     }
 
-    /* TÍTULO PRINCIPAL: Graduación de color en el texto (Efecto metálico) */
     h1 {
-        font-size: 4rem;
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
         font-weight: 800;
-        background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
-        -webkit-background-clip: text;      /* Recorta el gradiente a la forma de la letra */
-        -webkit-text-fill-color: transparent; /* Hace el texto transparente para ver el fondo */
-        margin-bottom: 1.5rem;
+        letter-spacing: -2px;
+        background: linear-gradient(180deg, #fff 30%, var(--text-dim) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.1;
     }
 
-    /* TARJETAS (CARDS): Estética de 'Cristal Esmerilado' */
+    /* CARDS */
     .card {
         background: var(--card-bg);
-        backdrop-filter: blur(20px);         /* Difuminado interno */
+        backdrop-filter: blur(20px);
         border: 1px solid var(--border-color);
-        border-radius: 24px;                 /* Bordes muy redondeados (Modern UI) */
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Sombra profunda para dar elevación */
-        overflow: hidden;
+        border-radius: 28px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        transition: border 0.3s ease;
+    }
+
+    .card:hover {
+        border-color: rgba(59, 130, 246, 0.3);
     }
 
     .card-header {
-        background: rgba(255, 255, 255, 0.03) !important;
+        background: transparent !important;
         border-bottom: 1px solid var(--border-color) !important;
-        padding: 25px;
+        padding: 30px !important;
     }
 
-    /* ETIQUETAS DE FORMULARIO: Estilo tipográfico minimalista y espaciado */
+    /* FORMULARIOS */
     .form-label {
         color: var(--text-dim);
-        font-weight: 600;
-        font-size: 0.85rem;
-        margin-bottom: 8px;
-        text-transform: uppercase;           /* Texto en mayúsculas para seriedad */
-        letter-spacing: 0.5px;
-    }
-
-    /* CAMPOS DE ENTRADA (INPUTS): Adaptación al modo oscuro */
-    input, select, textarea {
-        background: rgba(15, 23, 42, 0.6) !important;
-        border: 1px solid var(--border-color) !important;
-        color: white !important;
-        border-radius: 12px !important;
-        padding: 12px 16px !important;
-        transition: all 0.3s ease !important; /* Transición suave para interacciones */
-    }
-
-    /* EFECTO DE FOCO: Mejora la experiencia de usuario al escribir */
-    input:focus, select:focus, textarea:focus {
-        border-color: var(--input-focus) !important;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important; /* Halo azul suave alrededor */
-        outline: none;
-    }
-
-    /* BOTONES: Gradiente dinámico y efectos de movimiento */
-    .btn-primary {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        border: none;
-        border-radius: 14px;
-        padding: 14px 32px;
         font-weight: 700;
-        /* Curva Bezier para una animación de rebote sutil */
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    /* INTERACCIÓN DEL BOTÓN: Elevación visual al pasar el cursor */
-    .btn-primary:hover {
-        transform: translateY(-3px);         /* El botón sube ligeramente */
-        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5); /* Brillo externo azul */
-    }
-
-    /* ACORDEÓN: Estilo personalizado para integrarse con el fondo oscuro */
-    .accordion-item {
-        background: transparent !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 15px !important;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
         margin-bottom: 10px;
     }
 
-    .accordion-button {
+    input, select, textarea {
+        background: var(--input-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        color: #fff !important;
+        border-radius: 12px !important;
+        padding: 14px 18px !important;
+        font-size: 0.95rem;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: var(--accent-blue) !important;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+        outline: none;
+    }
+
+    .input-group-text {
+        background: var(--input-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--accent-blue) !important;
+    }
+
+    /* BOTONES */
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border: none;
+        border-radius: 14px;
+        padding: 16px 32px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px var(--accent-glow);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        color: var(--text-dim);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    /* SERVICIOS GRID */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 40px;
+    }
+
+    .service-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 25px;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        transition: 0.3s;
+    }
+
+    .service-item img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 14px;
+        margin-bottom: 20px;
+    }
+
+    /* ACORDEON */
+    .accordion-item {
         background: transparent !important;
-        color: white !important;
+        border: 1px solid var(--border-color) !important;
+        margin-bottom: 12px;
+        border-radius: 16px !important;
+        overflow: hidden;
+    }
+
+    .accordion-button {
+        background: rgba(255, 255, 255, 0.02) !important;
+        color: #fff !important;
         font-weight: 600;
+        padding: 20px;
     }
 
-    /* ESTADO ABIERTO DEL ACORDEÓN: Resalte del encabezado activo */
     .accordion-button:not(.collapsed) {
-        color: var(--accent-light) !important;
-        box-shadow: none !important;
+        color: var(--accent-blue) !important;
     }
 
-    /* UTILIDAD ALPINE.JS: Evita el parpadeo de elementos ocultos al cargar la página */
     [x-cloak] { display: none !important; }
 </style>
 </head>
@@ -207,10 +265,10 @@
 @keydown.window="resetTimer()" 
 @click.window="resetTimer()">
 
-        <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand" href="#" @click="section = 'inicio'">
-                <img src="stratandtax.png" alt="StratandTax Logo" style="height: 80px; width: auto;">
+                <img src="stratandtax.png" alt="StratandTax Logo" style="height: 60px; width: auto;">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -218,13 +276,13 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav ms-auto">
+                <div class="navbar-nav ms-auto align-items-center">
                     <a class="nav-link px-3" href="#" @click="section = 'inicio'">Inicio</a>
                     <template x-if="!isAuthenticated">
-                        <a class="nav-link px-3 btn btn-outline-light ms-lg-3" href="#" @click="section = 'login'">Acceder</a>
+                        <a class="nav-link btn btn-outline-primary px-4 ms-lg-3 text-white" href="#" @click="section = 'login'" style="border-radius: 10px;">Acceder</a>
                     </template>
                     <template x-if="isAuthenticated">
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex flex-column flex-lg-row align-items-center">
                             <a class="nav-link px-3" href="#" @click="section = 'formulario'">Generar Contrato</a>
                             <a class="nav-link text-warning ms-lg-3" href="#" @click="logout()">Cerrar Sesión</a>
                         </div>
@@ -237,9 +295,9 @@
     <section x-show="section === 'inicio'" x-transition x-cloak>
         <div class="hero-section">
             <div class="container">
-                <h1 class="display-3">Infraestructura de Alto Nivel</h1>
-                <p class="lead text-dim mx-auto mb-5" style="max-width: 700px;">
-                    Digitalización de procesos legales y administrativos para proyectos de ingeniería civil y urbanismo.
+                <h1 class="mb-4">Infraestructura<br>de Alto Nivel</h1>
+                <p class="lead text-dim mx-auto mb-5" style="max-width: 650px; font-size: 1.25rem;">
+                    Digitalización avanzada de procesos técnicos y jurídicos para la industria de la construcción y el desarrollo urbano.
                 </p>
                 <button @click="isAuthenticated ? section = 'formulario' : section = 'login'" class="btn btn-primary btn-lg px-5">
                     Iniciar Gestión de Contrato
@@ -247,23 +305,41 @@
             </div>
         </div>
 
+        <div class="container py-5">
+            <h2 class="text-center fw-bold mb-5">Nuestros Servicios Especializados</h2>
+            <div class="services-grid">
+                <div class="service-item">
+                    <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=400&q=80" alt="Consultoría">
+                    <h3>Consultoría Fiscal</h3>
+                    <p class="text-dim">Optimización técnica de la carga tributaria en proyectos de obra civil.</p>
+                </div>
+                <div class="service-item">
+                    <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=80" alt="Auditorías">
+                    <h3>Auditorías Preventivas</h3>
+                    <p class="text-dim">Cumplimiento normativo estricto en el desarrollo de infraestructura.</p>
+                </div>
+                <div class="service-item">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" alt="Planificación">
+                    <h3>Planificación Financiera</h3>
+                    <p class="text-dim">Estrategias de mitigación de riesgo para inversionistas y constructores.</p>
+                </div>
+            </div>
+        </div>
+
         <div class="container my-5 pb-5">
-            <div class="row g-5">
-                <div class="col-md-6">
-                    <h5 class="text-accent-light text-uppercase fw-bold mb-3" style="color: var(--accent-light);">Perfil Corporativo</h5>
-                    <h2 class="mb-4">Experiencia en Proyectos de Gran Escala</h2>
-                    <p class="text-dim">Especialistas en la gestión integral de infraestructura, brindando certeza técnica y jurídica en cada etapa de obra.</p>
-                    <div class="mt-4">
-                        <div class="p-3 mb-2 d-flex align-items-center card flex-row border-0">
-                            <span class="me-3">📍</span> <strong>Ciudad de México, MX</strong>
-                        </div>
-                        <div class="p-3 mb-2 d-flex align-items-center card flex-row border-0">
-                            <span class="me-3">📧</span> <strong>contacto@stratandtax.com</strong>
-                        </div>
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6">
+                    <h5 class="text-primary text-uppercase fw-bold mb-3">Perfil Corporativo</h5>
+                    <h2 class="display-6 fw-bold mb-4">Experiencia en Grandes Escalas</h2>
+                    <p class="text-dim mb-4">Brindamos certeza jurídica y técnica en cada etapa de la obra, desde la planificación hasta la entrega final.</p>
+                    <div class="card bg-opacity-10 border-0 p-3 mb-3 d-flex flex-row align-items-center">
+                        <span class="fs-4 me-3">📍</span> <div><strong>Ciudad de México</strong><br><small class="text-dim">Sede Central Operativa</small></div>
+                    </div>
+                    <div class="card bg-opacity-10 border-0 p-3 d-flex flex-row align-items-center">
+                        <span class="fs-4 me-3">📧</span> <div><strong>contacto@stratandtax.com</strong><br><small class="text-dim">Soporte Corporativo</small></div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <h5 class="text-accent-light text-uppercase fw-bold mb-3" style="color: var(--accent-light);">Servicios Especializados</h5>
+                <div class="col-lg-6">
                     <div class="accordion" id="serviciosAccordion">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
@@ -273,52 +349,19 @@
                             </h2>
                             <div id="serv1" class="accordion-collapse collapse show" data-bs-parent="#serviciosAccordion">
                                 <div class="accordion-body text-dim">
-                                    <div class="row align-items-center">
-                                        <div class="col-sm-4 mb-3 mb-sm-0">
-                                            <img src="ruta-a-tu-imagen-1.jpg" class="img-fluid rounded" alt="Defensa Legal">
-                                        </div>
-                                        <div class="col-sm-8">
-                                            Si buscas tranquilidad legal, Defensa Legal y Consultoría Técnica es la mejor opción. Su enfoque interdisciplinario marca la diferencia.
-                                        </div>
-                                    </div>
+                                    Enfoque interdisciplinario para la resolución de conflictos legales en materia de construcción y urbanismo.
                                 </div>
                             </div>
                         </div>
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#serv2">
-                                    Estrategia Fiscal
+                                    Estrategia Fiscal Global
                                 </button>
                             </h2>
                             <div id="serv2" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion">
                                 <div class="accordion-body text-dim">
-                                    <div class="row align-items-center">
-                                        <div class="col-sm-4 mb-3 mb-sm-0">
-                                            <img src="ruta-a-tu-imagen-2.jpg" class="img-fluid rounded" alt="Estrategia Fiscal">
-                                        </div>
-                                        <div class="col-sm-8">
-                                            Maximizar utilidades requiere más que solo vender; requiere una buena Estrategia Fiscal.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#serv3">
-                                    Auditoría Forense y Cumplimiento
-                                </button>
-                            </h2>
-                            <div id="serv3" class="accordion-collapse collapse" data-bs-parent="#serviciosAccordion">
-                                <div class="accordion-body text-dim">
-                                    <div class="row align-items-center">
-                                        <div class="col-sm-4 mb-3 mb-sm-0">
-                                            <img src="ruta-a-tu-imagen-3.jpg" class="img-fluid rounded" alt="Auditoría">
-                                        </div>
-                                        <div class="col-sm-8">
-                                            Proteja la integridad de su empresa con procesos de revisión profunda.
-                                        </div>
-                                    </div>
+                                    Maximizamos la eficiencia financiera de sus activos a través de marcos legales sólidos.
                                 </div>
                             </div>
                         </div>
@@ -330,24 +373,24 @@
 
     <section x-show="section === 'login'" x-transition x-cloak class="container my-5 py-5">
         <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card p-4 shadow-sm">
+            <div class="col-md-5 col-lg-4">
+                <div class="card p-4">
                     <div class="text-center mb-4">
                         <h3 class="fw-bold">Acceso Seguro</h3>
-                        <p class="text-dim small">Ingrese sus credenciales corporativas</p>
+                        <p class="text-dim small">Portal Administrativo Strat and Tax</p>
                     </div>
 
                     <form @submit.prevent="login()">
                         <div class="mb-3">
                             <label class="form-label">Usuario</label>
-                            <input type="text" x-model="userTyped" class="form-control w-100" required>
+                            <input type="text" x-model="userTyped" class="form-control" placeholder="ID de usuario" required>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" x-model="passTyped" class="form-control w-100" required>
+                            <input type="password" x-model="passTyped" class="form-control" placeholder="••••••••" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 mt-3">Autenticar</button>
-                        <button type="button" @click="section = 'inicio'" class="btn btn-link w-100 mt-2 text-muted text-decoration-none">← Volver</button>
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Autenticar Sistema</button>
+                        <button type="button" @click="section = 'inicio'" class="btn btn-link w-100 text-dim text-decoration-none small">← Volver al inicio</button>
                     </form>
                 </div>
             </div>
@@ -356,14 +399,15 @@
 
     <section x-show="section === 'formulario'" x-transition x-cloak class="container my-5">
         <div class="card border-0">
-            <div class="card-header text-center">
-                <h4 class="mb-0 fw-bold">Gestión de Contratos de Servicio</h4>
-                <p class="text-dim small mb-0 mt-1">Llene los campos para la generación automatizada del documento</p>
+            <div class="card-header text-center py-4">
+                <h3 class="mb-0 fw-bold text-white">Gestión de Contratos</h3>
+                <p class="text-dim small mb-0 mt-2">Generación automatizada de documentación técnica-legal</p>
             </div>
-            <div class="card-body p-lg-5">
-                <div x-show="success" class="alert alert-success mb-4" x-transition>
-                    ¡Documentos enviados con éxito! El formulario se ha reiniciado.
+            <div class="card-body p-4 p-lg-5">
+                <div x-show="success" class="alert alert-success bg-success bg-opacity-10 border-success text-success mb-4" x-transition>
+                    ✔ Documentación procesada y enviada correctamente.
                 </div>
+                
                 <form @submit.prevent="
                     loading = true;
                     const formData = new FormData($el);
@@ -388,36 +432,37 @@
                         alert('Error de conexión con el servidor.');
                     });
                 " enctype="multipart/form-data">
+                    
                     <div class="row g-4">
                         <div class="col-12">
-                            <div class="p-4 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-10">
+                            <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);">
                                 <label class="form-label">Tipo de Servicio (*)</label>
-                                <select id="servicio" name="servicio" class="form-select w-100" required onchange="document.getElementById('descripcion_del_servicio').value = this.value">
-                                    <option value="" disabled selected>--- Elige una opción ---</option>
-                                    <option value="Servicios de construccion de unidades unifamiliares">Servicios de construccion de unidades unifamiliares</option>
-                                    <option value="Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares">Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares</option>
-                                    <option value="Servicio de remodelacion general de viviendas unifamiliares">Servicio de remodelacion general de viviendas unifamiliares</option>
-                                    <option value="Servicios de reparacion de casas moviles en el sitio">Servicios de reparacion de casas moviles en el sitio</option>
-                                    <option value="Servicios de construccion y reparacion de patios y terrazas">Servicios de construccion y reparacion de patios y terrazas</option>
-                                    <option value="Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares">Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares</option>
-                                    <option value="Servicio de construccion de casas unifamiliares nuevas">Servicio de construccion de casas unifamiliares nuevas</option>
-                                    <option value="Servicio de instalacion de casas unifamiliares prefabricadas">Servicio de instalacion de casas unifamiliares prefabricadas</option>
-                                    <option value="Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas">Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas</option>
-                                    <option value="Dasarrollo urbano">Dasarrollo urbano</option>
-                                    <option value="Servicio de planificacion de la ordenacion urbana">Servicio de planificacion de la ordenacion urbana</option>
-                                    <option value="Servicio de administracion de tierras urbanas">Servicio de administracion de tierras urbanas</option>
-                                    <option value="Servicio de programacion de inversiones urbanas">Servicio de programacion de inversiones urbanas</option>
-                                    <option value="Servicio de reestructuracion de barrios marginales">Servicio de reestructuracion de barrios marginales</option>
+                                <select id="servicio" name="servicio" class="form-select" required onchange="document.getElementById('descripcion_del_servicio').value = this.value">
+                                    <option value="" disabled selected>Seleccione el tipo de obra o consultoría</option>
+                                    <option value="Servicios de construccion de unidades unifamiliares">Servicios de construcción de unidades unifamiliares</option>
+                                    <option value="Servicios de reparacion o ampliacion o remodelacion de viviendas unifamiliares">Servicios de reparación o ampliación de viviendas</option>
+                                    <option value="Servicio de remodelacion general de viviendas unifamiliares">Servicio de remodelación general</option>
+                                    <option value="Servicios de reparacion de casas moviles en el sitio">Servicios de reparación de casas móviles</option>
+                                    <option value="Servicios de construccion y reparacion de patios y terrazas">Construcción de patios y terrazas</option>
+                                    <option value="Servico de reparacion por daños ocasionados por fuego de viviendas unifamiliares">Reparación por daños de fuego</option>
+                                    <option value="Servicio de construccion de casas unifamiliares nuevas">Construcción de casas nuevas</option>
+                                    <option value="Servicio de instalacion de casas unifamiliares prefabricadas">Instalación de casas prefabricadas</option>
+                                    <option value="Servicio de construccion de casas en la ciudad o casas jardin unifamiliares nuevas">Casas jardín o ciudad nuevas</option>
+                                    <option value="Dasarrollo urbano">Desarrollo urbano</option>
+                                    <option value="Servicio de planificacion de la ordenacion urbana">Planificación de ordenación urbana</option>
+                                    <option value="Servicio de administracion de tierras urbanas">Administración de tierras</option>
+                                    <option value="Servicio de programacion de inversiones urbanas">Programación de inversiones urbanas</option>
+                                    <option value="Servicio de reestructuracion de barrios marginales">Reestructuración urbana</option>
                                     <option value="Servicios de alumbrado urbano">Servicios de alumbrado urbano</option>
-                                    <option value="Servicios de control o regulacion del desarrollo urbano">Servicios de control o regulacion del desarrollo urbano</option>
-                                    <option value="Servicios de estandares o regulacion de edificios urbanos">Servicios de estandares o regulacion de edificios urbanos</option>
-                                    <option value="Servicios comunitarios urbanos">Servicios comunitarios urbanos</option>
-                                    <option value="Servicios de administracion o gestion de proyectos o programas urbanos">Servicios de administracion o gestion de proyectos o programas urbanos</option>
-                                    <option value="Ingenieria civil">Ingenieria civil</option>
-                                    <option value="Ingenieria de carreteras">Ingenieria de carreteras</option>
-                                    <option value="Ingenieria deinfraestructura de instalaciones o fabricas">Ingenieria deinfraestructura de instalaciones o fabricas</option>
-                                    <option value="Servicios de mantenimiento e instalacion de equipo pesado">Servicios de mantenimiento e instalacion de equipo pesado</option>
-                                    <option value="Servicio de mantenimiento y reparacion de equipo pesado">Servicio de mantenimiento y reparacion de equipo pesado</option>
+                                    <option value="Servicios de control o regulacion del desarrollo urbano">Regulación de desarrollo urbano</option>
+                                    <option value="Servicios de estandares o regulacion de edificios urbanos">Estándares de edificios</option>
+                                    <option value="Servicios comunitarios urbanos">Servicios comunitarios</option>
+                                    <option value="Servicios de administracion o gestion de proyectos o programas urbanos">Gestión de proyectos urbanos</option>
+                                    <option value="Ingenieria civil">Ingeniería civil</option>
+                                    <option value="Ingenieria de carreteras">Ingeniería de carreteras</option>
+                                    <option value="Ingenieria deinfraestructura de instalaciones o fabricas">Infraestructura de fábricas</option>
+                                    <option value="Servicios de mantenimiento e instalacion de equipo pesado">Instalación de equipo pesado</option>
+                                    <option value="Servicio de mantenimiento y reparacion de equipo pesado">Reparación de equipo pesado</option>
                                 </select>
                                 <input type="hidden" id="descripcion_del_servicio" name="descripcion_del_servicio">
                             </div>
@@ -425,79 +470,80 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Razón Social (*)</label>
-                            <input type="text" id="razon_social" name="razon_social" class="form-control w-100" required>
+                            <input type="text" id="razon_social" name="razon_social" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">R.F.C (*)</label>
-                            <input type="text" id="r_f_c" name="r_f_c" class="form-control w-100" required>
+                            <input type="text" id="r_f_c" name="r_f_c" class="form-control" required>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Domicilio Fiscal del Cliente</label>
-                            <input type="text" id="domicilio_del_cliente" name="domicilio_del_cliente" class="form-control w-100">
+                            <input type="text" id="domicilio_del_cliente" name="domicilio_del_cliente" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Teléfono</label>
-                            <input type="tel" id="telefono_del_cliente" name="telefono_del_cliente" class="form-control w-100">
+                            <input type="tel" id="telefono_del_cliente" name="telefono_del_cliente" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Correo Electrónico (*)</label>
-                            <input type="email" id="correo_del_cliente" name="correo_del_cliente" class="form-control w-100" required>
+                            <input type="email" id="correo_del_cliente" name="correo_del_cliente" class="form-control" required>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label class="form-label">Inicio Estimado</label>
-                            <input type="date" id="fecha_de_inicio_del_servicio" name="fecha_de_inicio_del_servicio" class="form-control w-100">
+                            <input type="date" id="fecha_de_inicio_del_servicio" name="fecha_de_inicio_del_servicio" class="form-control">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label class="form-label">Conclusión Estimada</label>
-                            <input type="date" id="fecha_de_conclusion_del_servicio" name="fecha_de_conclusion_del_servicio" class="form-control w-100">
+                            <input type="date" id="fecha_de_conclusion_del_servicio" name="fecha_de_conclusion_del_servicio" class="form-control">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Monto (Sin IVA) (*)</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-transparent border-end-0 text-white">$</span>
-                                <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" class="form-control border-start-0" required>
+                                <span class="input-group-text">$</span>
+                                <input type="number" id="monto_de_la_operacion_sin_iva" name="monto_de_la_operacion_sin_iva" step="0.01" class="form-control" required>
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label">Forma de Pago</label>
-                            <input type="text" id="forma_de_pago" name="forma_de_pago" class="form-control w-100">
+                            <input type="text" id="forma_de_pago" name="forma_de_pago" class="form-control" placeholder="Transferencia, etc.">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Cantidad</label>
-                            <input type="number" id="cantidad" name="cantidad" class="form-control w-100">
+                            <input type="number" id="cantidad" name="cantidad" class="form-control">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Unidad de Medida</label>
-                            <input type="text" id="unidad" name="unidad" placeholder="Servicio, Hora..." class="form-control w-100">
+                            <input type="text" id="unidad" name="unidad" placeholder="Servicio, Hora..." class="form-control">
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Quien Firma la Solicitud (*)</label>
-                            <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" class="form-control w-100" required>
+                            <input type="text" id="nombre_completo_de_la_persona_que_firma_la_solicitud" name="nombre_completo_de_la_persona_que_firma_la_solicitud" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Cargo</label>
-                            <input type="text" id="cargo_de_la_persona_que_firma_la_solicitud" name="cargo_de_la_persona_que_firma_la_solicitud" class="form-control w-100">
+                            <input type="text" id="cargo_de_la_persona_que_firma_la_solicitud" name="cargo_de_la_persona_que_firma_la_solicitud" class="form-control">
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label">Documentación Adicional / Comentarios</label>
-                            <textarea id="comentarios" name="comentarios" rows="3" class="form-control w-100"></textarea>
+                            <label class="form-label">Comentarios Adicionales</label>
+                            <textarea id="comentarios" name="comentarios" rows="3" class="form-control"></textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Imagen Corporativa (Adjuntar para firma)</label>
-                            <input type="file" id="imagen_usuario" name="imagen_usuario" class="form-control w-100" accept="image/*">
+                            <label class="form-label">Imagen Corporativa / Logotipo (Para el documento)</label>
+                            <input type="file" id="imagen_usuario" name="imagen_usuario" class="form-control" accept="image/*">
                         </div>
 
                         <div class="col-12 mt-5">
-                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow" :disabled="loading">
-                                <span x-show="!loading">Procesar Documentación.</span>
-                                <span x-show="loading"> Generando documentos...</span>
+                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mb-3" :disabled="loading">
+                                <span x-show="!loading">Generar y Procesar Documentación</span>
+                                <span x-show="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                <span x-show="loading">Procesando...</span>
                             </button>
-                            <button type="reset" class="btn btn-secondary btn-lg w-100 py-3 shadow mt-2" @click="success = false">
-                                Limpiar Formulario manualmente
+                            <button type="reset" class="btn btn-secondary w-100 py-3" @click="success = false">
+                                Limpiar Formulario
                             </button>
                         </div>
                     </div>
@@ -507,7 +553,7 @@
     </section>
 
     <footer class="text-center py-5 border-top border-white border-opacity-10 mt-5">
-        <p class="text-dim small mb-0">&copy; 2026 STRAT AND TAX | Infraestructura digital by ZEON Org.</p>
+        <p class="text-dim small mb-0">&copy; 2026 STRAT AND TAX | Infraestructura Digital by ZEON Org.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
