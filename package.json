@@ -21,6 +21,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
+    "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.5",
     "docxtemplater": "^3.67.6",
     "docxtemplater-image-module-free": "^1.1.1",
