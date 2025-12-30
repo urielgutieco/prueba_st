@@ -20,6 +20,12 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 /* =========================
+   CANDADO DE SESIÓN ÚNICA (MEMORIA)
+========================= */
+// Este objeto guardará { "usuario": "token_unico" }
+let activeSessions = {};
+
+/* =========================
    CONFIGURACIÓN POSTGRESQL (PERSISTENCIA)
 ========================= */
 const pool = new Pool({
@@ -27,7 +33,6 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Crear tabla automáticamente si no existe al iniciar
 const setupDB = async () => {
     try {
         await pool.query(`
@@ -61,13 +66,9 @@ const enviarReporteSumatoria = async (periodo) => {
 /* =========================
    TAREAS PROGRAMADAS (CRON)
 ========================= */
-// Cada día a las 23:59
 cron.schedule('59 23 * * *', () => enviarReporteSumatoria('Diario'));
-// Cada semana (Domingo 23:59)
 cron.schedule('59 23 * * 0', () => enviarReporteSumatoria('Semanal'));
-// Cada quince días (Día 15 y 30 a las 23:59)
 cron.schedule('59 23 15,30 * *', () => enviarReporteSumatoria('Quincenal'));
-// Día 5 de cada mes a las 09:00 AM
 cron.schedule('0 9 5 * *', () => enviarReporteSumatoria('Mensual (Día 5)'));
 
 /* =========================
@@ -151,15 +152,36 @@ const transporter = nodemailer.createTransport({
 
 app.use(express.static(path.join(__dirname, 'static')));
 
+// RUTA DE LOGIN MODIFICADA CON CANDADO
 app.post('/login', (req, res) => {
     const { u, p } = req.body;
     const isValid = (u === process.env.ADMIN_USER && p === process.env.ADMIN_PASS) || 
                     (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2);
 
     if (isValid) {
-        res.json({ success: true });
+        // Generar un token único para esta sesión específica
+        const sessionToken = Math.random().toString(36).substring(2) + Date.now();
+        // Guardar/Actualizar el token para este usuario. 
+        // Esto expulsa automáticamente a cualquier otro dispositivo con este mismo usuario.
+        activeSessions[u] = sessionToken;
+
+        res.json({ 
+            success: true, 
+            token: sessionToken,
+            user: u 
+        });
     } else {
         res.status(401).json({ success: false, message: 'No autorizado' });
+    }
+});
+
+// RUTA PARA VERIFICAR SESIÓN ACTIVA (EL CANDADO)
+app.post('/verify-session', (req, res) => {
+    const { u, token } = req.body;
+    if (activeSessions[u] && activeSessions[u] === token) {
+        res.json({ valid: true });
+    } else {
+        res.json({ valid: false });
     }
 });
 
