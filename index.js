@@ -9,7 +9,6 @@ const nodemailer = require('nodemailer');
 const JSZip = require('jszip');
 const helmet = require('helmet');
 const compression = require('compression');
-const session = require('express-session');
 require('dotenv').config();
 
 // --- INICIO DE NUEVAS DEPENDENCIAS ---
@@ -19,8 +18,6 @@ const cron = require('node-cron');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
-const activeSessions = new Map();
-
 
 /* =========================
    CONFIGURACIÓN POSTGRESQL (PERSISTENCIA)
@@ -81,17 +78,6 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'static')));
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'stratandtax_secret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        secure: false,
-        maxAge: 30 * 60 * 1000 // 30 minutos
-    }
-}));
-
 
 /* =========================
    DIRECTORIOS
@@ -167,40 +153,17 @@ app.use(express.static(path.join(__dirname, 'static')));
 
 app.post('/login', (req, res) => {
     const { u, p } = req.body;
+    const isValid = (u === process.env.ADMIN_USER && p === process.env.ADMIN_PASS) || 
+                    (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2);
 
-    const isValid =
-        (u === process.env.ADMIN_USER && p === process.env.ADMIN_PASS) ||
-        (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2);
-
-    if (!isValid) {
-        return res.status(401).json({
-            success: false,
-            message: 'Credenciales inválidas'
-        });
+    if (isValid) {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ success: false, message: 'No autorizado' });
     }
-
-    if (activeSessions.has(u)) {
-        const existingSessionId = activeSessions.get(u);
-
-        if (existingSessionId !== req.sessionID) {
-            return res.status(403).json({
-                success: false,
-                message: 'Este usuario ya tiene una sesión activa'
-            });
-        }
-    }
-
-    req.session.authenticated = true;
-    activeSessions.set(u, req.sessionID);
-
-    return res.json({ success: true });
 });
 
-
 app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => {
-    if (!req.session || !req.session.authenticated) {
-    return res.status(403).json({ error: 'Sesión no autorizada' });
-}
     try {
         const data = req.body;
 
@@ -269,37 +232,6 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
         res.status(500).json({ error: "Error interno al procesar los documentos." });
     }
 });
-
-
-app.post('/logout', (req, res) => {
-    if (req.session) {
-        for (const [user, sessionId] of activeSessions.entries()) {
-            if (sessionId === req.sessionID) {
-                activeSessions.delete(user);
-                break;
-            }
-        }
-
-        req.session.destroy(() => {
-            res.json({ success: true });
-        });
-    } else {
-        res.json({ success: true });
-    }
-});
-
-app.use((req, res, next) => {
-    if (req.session && !req.session.authenticated) {
-        for (const [user, sessionId] of activeSessions.entries()) {
-            if (sessionId === req.sessionID) {
-                activeSessions.delete(user);
-                break;
-            }
-        }
-    }
-    next();
-});
-
 
 /* =========================
    SERVER
