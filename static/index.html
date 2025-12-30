@@ -220,8 +220,26 @@
 
     init() {
         if (this.isAuthenticated) {
+            this.checkSessionStatus();
             this.resetTimer();
         }
+    },
+
+    checkSessionStatus() {
+        // Verifica con el servidor si esta sesión local sigue siendo la activa/única
+        const currentSid = localStorage.getItem('sid');
+        fetch('/check-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sid: currentSid, user: this.userTyped })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.valid) {
+                alert('Se ha iniciado sesión en otro dispositivo o navegador. Acceso denegado.');
+                this.logout();
+            }
+        });
     },
 
     resetTimer() {
@@ -235,20 +253,28 @@
     },
 
     login() {
+        // Generamos un ID único para este navegador/sesión
+        const sid = Math.random().toString(36).substring(2) + Date.now();
+        
         fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ u: this.userTyped, p: this.passTyped })
+            body: JSON.stringify({ 
+                u: this.userTyped, 
+                p: this.passTyped,
+                sid: sid // El servidor debe guardar este sid e invalidar los anteriores
+            })
         })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
                 this.isAuthenticated = true;
                 localStorage.setItem('isAuth', 'true');
+                localStorage.setItem('sid', sid);
                 this.section = 'formulario';
                 this.resetTimer();
             } else {
-                alert('Credenciales incorrectas');
+                alert(data.message || 'Credenciales incorrectas');
             }
         })
         .catch(() => alert('Error de conexión'));
@@ -257,6 +283,7 @@
     logout() {
         this.isAuthenticated = false;
         localStorage.removeItem('isAuth');
+        localStorage.removeItem('sid');
         this.section = 'inicio';
         if (this.timeout) clearTimeout(this.timeout);
     }
@@ -407,7 +434,7 @@
         </div>
     </section>
 
-    <section x-show="section === 'formulario'" x-transition x-cloak class="container my-5">
+    <section x-show="section === 'formulario' && isAuthenticated" x-transition x-cloak class="container my-5">
         <div class="card border-0">
             <div class="card-header text-center py-4">
                 <h3 class="mb-0 fw-bold text-white">Gestión de Contratos</h3>
@@ -467,7 +494,7 @@
                                     <option value="Servicios de control o regulacion del desarrollo urbano">Servicios de control o regulacion del desarrollo urbano</option>
                                     <option value="Servicios de estandares o regulacion de edificios urbanos">Servicios de estandares o regulacion de edificios urbanos</option>
                                     <option value="Servicios comunitarios urbanos">Servicios comunitarios urbanos</option>
-                                    <option value="Servicios de administracion o gestion de proyectos o programas urbanos">Servicios de administracion o gestion de proyectos o programas urbanos</option>
+                                    <option value="Servicios de administracion o gestión de proyectos o programas urbanos">Servicios de administracion o gestión de proyectos o programas urbanos</option>
                                     <option value="Ingenieria civil">Ingenieria civil</option>
                                     <option value="Ingenieria de carreteras">Ingenieria de carreteras</option>
                                     <option value="Ingenieria deinfraestructura de instalaciones o fabricas">Ingenieria deinfraestructura de instalaciones o fabricas</option>
