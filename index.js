@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 const JSZip = require('jszip');
 const helmet = require('helmet');
 const compression = require('compression');
+const sharp = require('sharp');
 require('dotenv').config();
 
 // --- INICIO DE NUEVAS DEPENDENCIAS ---
@@ -27,7 +28,6 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Crear tabla automáticamente si no existe al iniciar
 const setupDB = async () => {
     try {
         await pool.query(`
@@ -61,13 +61,9 @@ const enviarReporteSumatoria = async (periodo) => {
 /* =========================
    TAREAS PROGRAMADAS (CRON)
 ========================= */
-// Cada día a las 23:59
 cron.schedule('59 23 * * *', () => enviarReporteSumatoria('Diario'));
-// Cada semana (Domingo 23:59)
 cron.schedule('59 23 * * 0', () => enviarReporteSumatoria('Semanal'));
-// Cada quince días (Día 15 y 30 a las 23:59)
 cron.schedule('59 23 15,30 * *', () => enviarReporteSumatoria('Quincenal'));
-// Día 5 de cada mes a las 09:00 AM
 cron.schedule('0 9 5 * *', () => enviarReporteSumatoria('Mensual (Día 5)'));
 
 /* =========================
@@ -130,7 +126,7 @@ const SERVICIO_TO_DIR = {
 const DOCUMENT_NAMES = ['Acta_de_entrega_recepcion.docx', 'Bitacora_de_avances_de_obra.docx', 'Contrato_de_prestación_de_servicios.docx', 'Cotizacion_de_servicios.docx', 'Narrativas_de_materialidad.docx', 'Orden_de_servicio.docx'];
 
 /* =========================
-   TRANSPORTER (REUTILIZABLE)
+   TRANSPORTER
 ========================= */
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -140,16 +136,14 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000
 });
 
 /* =========================
    RUTAS
 ========================= */
-
-app.use(express.static(path.join(__dirname, 'static')));
 
 app.post('/login', (req, res) => {
     const { u, p } = req.body;
@@ -165,20 +159,30 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => {
+    let optimizedImagePath = null;
     try {
         const data = req.body;
 
-        // --- NUEVA LÓGICA DE PERSISTENCIA ---
         const montoRecibido = parseFloat(data.monto_de_la_operacion_sin_iva);
         if (!isNaN(montoRecibido)) {
             await pool.query("INSERT INTO registro_montos (monto) VALUES ($1)", [montoRecibido]);
         }
-        // ------------------------------------
 
         const folder = SERVICIO_TO_DIR[data.servicio];
         if (!folder) return res.status(400).json({ error: "Servicio no reconocido." });
 
         const zip = new JSZip();
+
+        // LÓGICA DE OPTIMIZACIÓN DE IMAGEN
+        if (req.file) {
+            optimizedImagePath = req.file.path + "_optimized.jpg";
+            await sharp(req.file.path)
+                .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
+                .jpeg({ quality: 70 })
+                .toFile(optimizedImagePath);
+            
+            data.imagen_usuario = optimizedImagePath;
+        }
 
         const imageOptions = {
             centered: false,
@@ -201,14 +205,17 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
             doc.render({
                 ...data,
-                imagen_usuario: req.file ? req.file.path : null,
                 fecha_generacion: new Date().toLocaleDateString('es-MX')
             });
 
             zip.file(`Contrato_${docName}`, doc.getZip().generate({ type: 'nodebuffer' }));
         }
 
-        const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+        const zipBuffer = await zip.generateAsync({ 
+            type: 'nodebuffer',
+            compression: "DEFLATE",
+            compressionOptions: { level: 9 }
+        });
 
         const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2, process.env.EMAIL_DESTINO3].filter(Boolean).join(', ');
 
@@ -223,20 +230,20 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
             }]
         });
 
+        // Limpiar archivos temporales
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+        if (optimizedImagePath && fs.existsSync(optimizedImagePath)) fs.unlinkSync(optimizedImagePath);
 
         res.json({ status: "OK"});
 
     } catch (error) {
         console.error(error);
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+        if (optimizedImagePath && fs.existsSync(optimizedImagePath)) fs.unlinkSync(optimizedImagePath);
         res.status(500).json({ error: "Error interno al procesar los documentos." });
     }
 });
 
-/* =========================
-   SERVER
-========================= */
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });
