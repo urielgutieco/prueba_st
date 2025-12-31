@@ -234,15 +234,6 @@
         }
     },
 
-    handleAuthError(status) {
-        if (status === 401) {
-            alert('Tu sesión ha expirado o se ha iniciado sesión en otro dispositivo.');
-            this.logout();
-            return true;
-        }
-        return false;
-    },
-
     login() {
         fetch('/login', {
             method: 'POST',
@@ -264,12 +255,10 @@
     },
 
     logout() {
-        fetch('/logout', { method: 'POST' }).finally(() => {
-            this.isAuthenticated = false;
-            localStorage.removeItem('isAuth');
-            this.section = 'inicio';
-            if (this.timeout) clearTimeout(this.timeout);
-        });
+        this.isAuthenticated = false;
+        localStorage.removeItem('isAuth');
+        this.section = 'inicio';
+        if (this.timeout) clearTimeout(this.timeout);
     }
 }" 
 @mousemove.window="resetTimer()" 
@@ -436,12 +425,8 @@
                         method: 'POST',
                         body: formData
                     })
-                    .then(response => {
-                        if (handleAuthError(response.status)) return;
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
-                        if (!data) return;
                         loading = false;
                         if(data.status === 'OK') {
                             $el.reset();
