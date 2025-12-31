@@ -18,6 +18,9 @@ const cron = require('node-cron');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
+// Evitar límites de caché en Sharp para Render
+sharp.cache(false);
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -107,8 +110,10 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    connectionTimeout: 20000,
-    socketTimeout: 60000
+    connectionTimeout: 30000, // Aumentado a 30s
+    greetingTimeout: 30000,
+    socketTimeout: 60000,
+    pool: true // Usar pool para manejar múltiples envíos si es necesario
 });
 
 app.post('/login', (req, res) => {
@@ -134,13 +139,14 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
         const zip = new JSZip();
 
-        // --- OPTIMIZACIÓN AGRESIVA PARA EVITAR ERROR 552 ---
         if (req.file) {
             optimizedImagePath = req.file.path + "_final.jpg";
+            // Reducción aún más eficiente de Sharp
             await sharp(req.file.path)
-                .resize(500, 500, { fit: 'inside' }) // Tamaño pequeño pero suficiente para Word
-                .flatten({ background: '#ffffff' }) // Quita transparencia si es PNG
-                .jpeg({ quality: 50, progressive: true, chromaSubsampling: '4:2:0' }) 
+                .resize(500, 500, { fit: 'inside' })
+                .rotate() // Corregir rotación automática de móviles
+                .flatten({ background: '#ffffff' })
+                .jpeg({ quality: 40, progressive: true }) 
                 .toFile(optimizedImagePath);
             
             data.imagen_usuario = optimizedImagePath;
@@ -149,7 +155,7 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
         const imageOptions = {
             centered: false,
             getImage: (tagValue) => fs.readFileSync(tagValue),
-            getSize: () => [150, 150] // Tamaño dentro del Word
+            getSize: () => [150, 150]
         };
 
         for (const docName of DOCUMENT_NAMES) {
@@ -180,18 +186,19 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
         const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2, process.env.EMAIL_DESTINO3].filter(Boolean).join(', ');
 
+        // Envolver el envío en una promesa para asegurar que termine antes de limpiar archivos
         await transporter.sendMail({
             from: `"Sistema StratandTax" <${process.env.EMAIL_USER}>`,
             to: destinatarios, 
             subject: `Expediente: ${data.razon_social || 'Nuevo Registro'}`,
-            text: `Se adjuntan los 6 documentos generados para el servicio: ${data.servicio}`,
+            text: `Se adjuntan los documentos generados para el servicio: ${data.servicio}`,
             attachments: [{ 
                 filename: `Expediente_${data.r_f_c || 'archivos'}.zip`, 
                 content: zipBuffer 
             }]
         });
 
-        // Limpieza
+        // Limpieza de archivos temporales
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
         if (optimizedImagePath && fs.existsSync(optimizedImagePath)) fs.unlinkSync(optimizedImagePath);
 
@@ -199,12 +206,12 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
     } catch (error) {
         console.error("DETALLE DEL ERROR:", error);
+        // Asegurar limpieza incluso en error
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
         if (optimizedImagePath && fs.existsSync(optimizedImagePath)) fs.unlinkSync(optimizedImagePath);
         
-        // Respuesta clara al cliente
         res.status(500).json({ 
-            error: "El archivo ZIP es demasiado pesado para enviarse por correo. Intente con una imagen más pequeña o contacte soporte." 
+            error: "Error en el servidor o archivo demasiado pesado para el destino." 
         });
     }
 });
