@@ -28,6 +28,7 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
+// Crear tabla automáticamente si no existe al iniciar
 const setupDB = async () => {
     try {
         await pool.query(`
@@ -61,9 +62,13 @@ const enviarReporteSumatoria = async (periodo) => {
 /* =========================
    TAREAS PROGRAMADAS (CRON)
 ========================= */
+// Cada día a las 23:59
 cron.schedule('59 23 * * *', () => enviarReporteSumatoria('Diario'));
+// Cada semana (Domingo 23:59)
 cron.schedule('59 23 * * 0', () => enviarReporteSumatoria('Semanal'));
+// Cada quince días (Día 15 y 30 a las 23:59)
 cron.schedule('59 23 15,30 * *', () => enviarReporteSumatoria('Quincenal'));
+// Día 5 de cada mes a las 09:00 AM
 cron.schedule('0 9 5 * *', () => enviarReporteSumatoria('Mensual (Día 5)'));
 
 /* =========================
@@ -90,7 +95,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 ========================= */
 const upload = multer({
     dest: UPLOADS_DIR,
-    limits: { fileSize: 10 * 1024 * 1024 } // Límite 10MB de subida
+    limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 /* =========================
@@ -126,7 +131,7 @@ const SERVICIO_TO_DIR = {
 const DOCUMENT_NAMES = ['Acta_de_entrega_recepcion.docx', 'Bitacora_de_avances_de_obra.docx', 'Contrato_de_prestación_de_servicios.docx', 'Cotizacion_de_servicios.docx', 'Narrativas_de_materialidad.docx', 'Orden_de_servicio.docx'];
 
 /* =========================
-   TRANSPORTER (CON TIEMPOS DE ESPERA OPTIMIZADOS)
+   TRANSPORTER (REUTILIZABLE)
 ========================= */
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -136,14 +141,16 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    connectionTimeout: 20000, // 20 segundos para conectar
-    greetingTimeout: 20000,   // 20 segundos para saludo SMTP
-    socketTimeout: 60000      // 60 segundos para transferencia de datos (importante para adjuntos)
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
 /* =========================
    RUTAS
 ========================= */
+
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.post('/login', (req, res) => {
     const { u, p } = req.body;
@@ -159,36 +166,35 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => {
-    let optimizedImagePath = null;
     try {
         const data = req.body;
 
+        // --- NUEVA LÓGICA DE PERSISTENCIA ---
         const montoRecibido = parseFloat(data.monto_de_la_operacion_sin_iva);
         if (!isNaN(montoRecibido)) {
             await pool.query("INSERT INTO registro_montos (monto) VALUES ($1)", [montoRecibido]);
         }
+        // ------------------------------------
 
         const folder = SERVICIO_TO_DIR[data.servicio];
         if (!folder) return res.status(400).json({ error: "Servicio no reconocido." });
 
         const zip = new JSZip();
 
-        // 1. OPTIMIZACIÓN REAL DE LA IMAGEN
-        if (req.file) {
-            optimizedImagePath = req.file.path + "_optimized.jpg";
-            await sharp(req.file.path)
-                .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
-                .jpeg({ quality: 70, progressive: true })
-                .toFile(optimizedImagePath);
-            
-            // Asignamos la ruta de la imagen optimizada a los datos
-            data.imagen_usuario = optimizedImagePath;
-        }
-
         const imageOptions = {
             centered: false,
             getImage: (tagValue) => fs.readFileSync(tagValue),
             getSize: () => [150, 150]
+        }
+        if (req.file) {
+        const optimizedPath = req.file.path + "_opt.jpg";
+        await sharp(req.file.path)
+            .resize(800) // Redimensionar a un ancho máximo de 800px
+            .jpeg({ quality: 80 })
+            .toFile(optimizedPath);
+        
+        // Usar optimizedPath para docxtemplater
+        data.imagen_usuario = optimizedPath; 
         };
 
         for (const docName of DOCUMENT_NAMES) {
@@ -204,21 +210,16 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
                 linebreaks: true
             });
 
-            // 2. RENDERIZADO CON LA IMAGEN YA OPTIMIZADA
             doc.render({
                 ...data,
+                imagen_usuario: req.file ? req.file.path : null,
                 fecha_generacion: new Date().toLocaleDateString('es-MX')
             });
 
             zip.file(`Contrato_${docName}`, doc.getZip().generate({ type: 'nodebuffer' }));
         }
 
-        // 3. COMPRESIÓN MÁXIMA DEL ZIP
-        const zipBuffer = await zip.generateAsync({ 
-            type: 'nodebuffer',
-            compression: "DEFLATE",
-            compressionOptions: { level: 9 } 
-        });
+        const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
 
         const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2, process.env.EMAIL_DESTINO3].filter(Boolean).join(', ');
 
@@ -233,16 +234,13 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
             }]
         });
 
-        // 4. LIMPIEZA DE TODOS LOS TEMPORALES
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-        if (optimizedImagePath && fs.existsSync(optimizedImagePath)) fs.unlinkSync(optimizedImagePath);
 
         res.json({ status: "OK"});
 
     } catch (error) {
         console.error(error);
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-        if (optimizedImagePath && fs.existsSync(optimizedImagePath)) fs.unlinkSync(optimizedImagePath);
         res.status(500).json({ error: "Error interno al procesar los documentos." });
     }
 });
