@@ -90,7 +90,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 ========================= */
 const upload = multer({
     dest: UPLOADS_DIR,
-    limits: { fileSize: 10 * 1024 * 1024 }
+    limits: { fileSize: 10 * 1024 * 1024 } // Límite 10MB de subida
 });
 
 /* =========================
@@ -126,7 +126,7 @@ const SERVICIO_TO_DIR = {
 const DOCUMENT_NAMES = ['Acta_de_entrega_recepcion.docx', 'Bitacora_de_avances_de_obra.docx', 'Contrato_de_prestación_de_servicios.docx', 'Cotizacion_de_servicios.docx', 'Narrativas_de_materialidad.docx', 'Orden_de_servicio.docx'];
 
 /* =========================
-   TRANSPORTER
+   TRANSPORTER (CON TIEMPOS DE ESPERA OPTIMIZADOS)
 ========================= */
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -136,9 +136,9 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
-    socketTimeout: 30000
+    connectionTimeout: 20000, // 20 segundos para conectar
+    greetingTimeout: 20000,   // 20 segundos para saludo SMTP
+    socketTimeout: 60000      // 60 segundos para transferencia de datos (importante para adjuntos)
 });
 
 /* =========================
@@ -173,14 +173,15 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
         const zip = new JSZip();
 
-        // LÓGICA DE OPTIMIZACIÓN DE IMAGEN
+        // 1. OPTIMIZACIÓN REAL DE LA IMAGEN
         if (req.file) {
             optimizedImagePath = req.file.path + "_optimized.jpg";
             await sharp(req.file.path)
                 .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
-                .jpeg({ quality: 70 })
+                .jpeg({ quality: 70, progressive: true })
                 .toFile(optimizedImagePath);
             
+            // Asignamos la ruta de la imagen optimizada a los datos
             data.imagen_usuario = optimizedImagePath;
         }
 
@@ -203,6 +204,7 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
                 linebreaks: true
             });
 
+            // 2. RENDERIZADO CON LA IMAGEN YA OPTIMIZADA
             doc.render({
                 ...data,
                 fecha_generacion: new Date().toLocaleDateString('es-MX')
@@ -211,10 +213,11 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
             zip.file(`Contrato_${docName}`, doc.getZip().generate({ type: 'nodebuffer' }));
         }
 
+        // 3. COMPRESIÓN MÁXIMA DEL ZIP
         const zipBuffer = await zip.generateAsync({ 
             type: 'nodebuffer',
             compression: "DEFLATE",
-            compressionOptions: { level: 9 }
+            compressionOptions: { level: 9 } 
         });
 
         const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2, process.env.EMAIL_DESTINO3].filter(Boolean).join(', ');
@@ -230,7 +233,7 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
             }]
         });
 
-        // Limpiar archivos temporales
+        // 4. LIMPIEZA DE TODOS LOS TEMPORALES
         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
         if (optimizedImagePath && fs.existsSync(optimizedImagePath)) fs.unlinkSync(optimizedImagePath);
 
@@ -244,6 +247,9 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
     }
 });
 
+/* =========================
+   SERVER
+========================= */
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });
