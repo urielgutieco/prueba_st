@@ -167,18 +167,18 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
     try {
         const data = req.body;
 
-        // --- NUEVA LÓGICA DE PERSISTENCIA ---
-        const montoRecibido = parseFloat(data.monto_de_la_operacion_sin_iva);
-        if (!isNaN(montoRecibido)) {
-            await pool.query("INSERT INTO registro_montos (monto) VALUES ($1)", [montoRecibido]);
-        }
-        // ------------------------------------
+        // 1. Persistencia en DB (sin detener el flujo)
+        try {
+            const monto = parseFloat(data.monto_de_la_operacion_sin_iva);
+            if (!isNaN(monto)) await pool.query("INSERT INTO registro_montos (monto) VALUES ($1)", [monto]);
+        } catch (dbErr) { console.error("DB Error:", dbErr); }
 
         const folder = SERVICIO_TO_DIR[data.servicio];
-        if (!folder) return res.status(400).json({ error: "Servicio no reconocido." });
+        if (!folder) return res.status(400).json({ error: "Carpeta de servicio no encontrada." });
 
         const zip = new JSZip();
 
+        // 2. Configuración de imágenes solo si existe el archivo
         const imageOptions = {
             centered: false,
             getImage: (tagValue) => fs.readFileSync(tagValue),
@@ -192,40 +192,47 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
             const content = fs.readFileSync(templatePath);
             const zipDoc = new PizZip(content);
 
+            // Solo cargar ImageModule si hay un archivo subido
             const doc = new Docxtemplater(zipDoc, {
                 modules: req.file ? [new ImageModule(imageOptions)] : [],
                 paragraphLoop: true,
                 linebreaks: true
             });
 
-        
+            // 3. RENDERIZADO: Pasa los datos del formulario al Word
+            doc.render({
+                ...data,
+                // En tu Word usa la etiqueta {%foto} para mostrar la imagen
+                foto: req.file ? req.file.path : null 
+            });
 
-            zip.file(`Contrato_${docName}`, doc.getZip().generate({ type: 'nodebuffer' }));
+            zip.file(docName, doc.getZip().generate({ type: 'nodebuffer' }));
         }
 
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
 
+        // 4. Envío por Email
         const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2].filter(Boolean).join(', ');
-
         await transporter.sendMail({
             from: `"StratandTax" <${process.env.EMAIL_USER}>`,
-            to: destinatarios, 
-            subject: `Nuevo Registro: ${data.razon_social || 'Sin Nombre'}`,
-            text: `Se ha generado un nuevo registro para el servicio: ${data.servicio}`,
+            to: destinatarios,
+            subject: `Registro: ${data.razon_social || 'Nuevo Cliente'}`,
+            text: `Servicio: ${data.servicio}`,
             attachments: [{ 
-                filename: `Registro_${data.r_f_c || 'documento'}.zip`, 
+                filename: `Expediente_${data.r_f_c || 'cliente'}.zip`, 
                 content: zipBuffer 
             }]
         });
 
-        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+        // Limpiar archivo temporal de la carpeta /uploads
+        if (req.file) fs.unlinkSync(req.file.path);
 
-        res.json({ status: "OK"});
+        res.json({ status: "OK" });
 
     } catch (error) {
-        console.error(error);
-        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-        res.status(500).json({ error: "Error interno al procesar los documentos." });
+        console.error("Error procesando Word:", error);
+        if (req.file) fs.unlinkSync(req.file.path);
+        res.status(500).json({ error: "Error interno al generar documentos." });
     }
 });
 
