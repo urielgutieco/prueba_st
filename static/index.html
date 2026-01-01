@@ -408,45 +408,45 @@
     </section>
 
     <section x-show="section === 'formulario'" x-transition x-cloak class="container my-5">
-        <div class="card border-0">
-            <div class="card-header text-center py-4">
-                <h3 class="mb-0 fw-bold text-white">Gestión de Contratos</h3>
-                <p class="text-dim small mb-0 mt-2">Generación automatizada de documentación técnica-legal</p>
+    <div class="card border-0">
+        <div class="card-header text-center py-4">
+            <h3 class="mb-0 fw-bold text-white">Gestión de Contratos</h3>
+            <p class="text-dim small mb-0 mt-2">Generación automatizada de documentación técnica-legal</p>
+        </div>
+        <div class="card-body p-4 p-lg-5">
+            <div x-show="success" class="alert alert-success bg-success bg-opacity-10 border-success text-success mb-4" x-transition>
+                ✔ Documentación procesada y enviada correctamente.
             </div>
-            <div class="card-body p-4 p-lg-5">
-                <div x-show="success" class="alert alert-success bg-success bg-opacity-10 border-success text-success mb-4" x-transition>
-                    ✔ Documentación procesada y enviada correctamente.
-                </div>
-                
-                <form 
-                    @submit.prevent="
-                        loading = true;
-                        success = false;
-                        const formData = new FormData($el); // Captura todos los inputs con atributo 'name'
+            
+            <form 
+                @submit.prevent="
+                    loading = true;
+                    success = false;
+                    const formData = new FormData($el);
 
-                        fetch('/generate-word', {
-                            method: 'POST',
-                            body: formData 
-                            // NOTA: No agregamos headers manualmente, el navegador lo hará por nosotros
-                        })
-                        .then(res => res.json())
+                    fetch('/generate-word', {
+                        method: 'POST',
+                        body: formData 
+                    })
+                    .then(res => res.json())
                     .then(data => {
                         loading = false;
                         if(data.status === 'OK') {
                             success = true;
-                            $el.reset(); // Limpia los campos
+                            $el.reset(); 
                             alert('¡Éxito! Los documentos han sido enviados.');
                         } else {
                             alert('Error del servidor: ' + data.error);
                         }
-                        .catch(err => {
-                            loading = false;
-                            console.error(err);
-                            alert('Error de conexión o del servidor.');
-                        });
-                    " 
-                    enctype="multipart/form-data"
-                >
+                    })
+                    .catch(err => {
+                        loading = false;
+                        console.error(err);
+                        alert('Error de conexión o del servidor.');
+                    });
+                " 
+                enctype="multipart/form-data"
+            >
 
                 </form>
                     
@@ -564,8 +564,8 @@
                             </button>
                         </div>
                     </div>
-                </form>
-            </div>
+                </form></div>
+            
         </div>
     </section>
 
