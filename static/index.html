@@ -251,6 +251,34 @@
         localStorage.removeItem('isAuth');
         this.section = 'inicio';
         if (this.timeout) clearTimeout(this.timeout);
+    },
+
+    async handleSubmit(event) {
+        this.loading = true;
+        this.success = false;
+        const form = event.target;
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch('/generate-word', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            this.loading = false;
+            if (data.status === 'OK') {
+                this.success = true;
+                form.reset();
+                alert('¡Éxito! Los documentos han sido enviados.');
+            } else {
+                alert('Error del servidor: ' + data.error);
+            }
+        } catch (err) {
+            this.loading = false;
+            console.error(err);
+            alert('Error de conexión o del servidor.');
+        }
     }
 }" 
 @mousemove.window="resetTimer()" 
@@ -410,35 +438,7 @@
                     ✔ Documentación procesada y enviada correctamente.
                 </div>
                 
-                <form 
-                    @submit.prevent="
-                        loading = true;
-                        success = false;
-                        const formData = new FormData($el);
-
-                        fetch('/generate-word', {
-                            method: 'POST',
-                            body: formData 
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            loading = false;
-                            if(data.status === 'OK') {
-                                success = true;
-                                $el.reset(); 
-                                alert('¡Éxito! Los documentos han sido enviados.');
-                            } else {
-                                alert('Error del servidor: ' + data.error);
-                            }
-                        })
-                        .catch(err => {
-                            loading = false;
-                            console.error(err);
-                            alert('Error de conexión o del servidor.');
-                        });
-                    " 
-                    enctype="multipart/form-data"
-                >
+                <form @submit.prevent="handleSubmit($event)" enctype="multipart/form-data">
                     <div class="row g-4">
                         <div class="col-12">
                             <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);">
