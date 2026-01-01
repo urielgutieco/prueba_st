@@ -198,11 +198,7 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
                 linebreaks: true
             });
 
-            doc.render({
-                ...data,
-                imagen_usuario: req.file ? req.file.path : null,
-                fecha_generacion: new Date().toLocaleDateString('es-MX')
-            });
+        
 
             zip.file(`Contrato_${docName}`, doc.getZip().generate({ type: 'nodebuffer' }));
         }

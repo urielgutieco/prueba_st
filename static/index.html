@@ -418,30 +418,43 @@
                     ✔ Documentación procesada y enviada correctamente.
                 </div>
                 
-                <form @submit.prevent="
-                    loading = true;
-                    const formData = new FormData($el);
-                    fetch('/generate-word', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        loading = false;
-                        if(data.status === 'OK') {
-                            $el.reset();
-                            success = true;
-                            alert('Proceso completado.');
-                            setTimeout(() => success = false, 6000);
-                        } else {
-                            alert('Error: ' + (data.error || 'Ocurrió un problema'));
-                        }
-                    })
-                    .catch(err => {
-                        loading = false;
-                        alert('Error de conexión con el servidor.');
-                    });
-                " enctype="multipart/form-data">
+                <form 
+            @submit.prevent="
+                loading = true;
+                const formData = new FormData($el); // Captura todos los inputs con atributo 'name'
+
+                fetch('/generate-word', {
+                    method: 'POST',
+                    body: formData 
+                    // NOTA: No agregamos headers manualmente, el navegador lo hará por nosotros
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                    return response.json();
+                })
+                .then(data => {
+                    loading = false;
+                    if(data.status === 'OK') {
+                        $el.reset();
+                        success = true;
+                        alert('Proceso completado.');
+                        setTimeout(() => success = false, 6000);
+                    } else {
+                        alert('Error: ' + (data.error || 'Ocurrió un problema'));
+                    }
+                })
+                .catch(err => {
+                    loading = false;
+                    console.error(err);
+                    alert('Error de conexión o del servidor.');
+                });
+            " 
+            enctype="multipart/form-data"
+        >
+            <input type="text" name="titulo">
+            <input type="file" name="documento">
+            <button type="submit" :disabled="loading">Enviar</button>
+        </form>
                     
                     <div class="row g-4">
                         <div class="col-12">
