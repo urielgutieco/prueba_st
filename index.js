@@ -154,8 +154,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.post('/login', (req, res) => {
     const { u, p } = req.body;
     const isValid = (u === process.env.ADMIN_USER && p === process.env.ADMIN_PASS) || 
-                    (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2) || 
-                    (u === process.env.ADMIN_USER3 && p === process.env.ADMIN_PASS3);
+                    (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2);
 
     if (isValid) {
         res.json({ success: true });
@@ -210,7 +209,7 @@ app.post('/generate-word', upload.single('imagen_usuario'), async (req, res) => 
 
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
 
-        const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2, process.env.EMAIL_DESTINO3].filter(Boolean).join(', ');
+        const destinatarios = [process.env.EMAIL_DESTINO, process.env.EMAIL_DESTINO2].filter(Boolean).join(', ');
 
         await transporter.sendMail({
             from: `"StratandTax" <${process.env.EMAIL_USER}>`,
