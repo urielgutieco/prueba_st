@@ -154,7 +154,8 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.post('/login', (req, res) => {
     const { u, p } = req.body;
     const isValid = (u === process.env.ADMIN_USER && p === process.env.ADMIN_PASS) || 
-                    (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2);
+                    (u === process.env.ADMIN_USER2 && p === process.env.ADMIN_PASS2) || 
+                    (u === process.env.ADMIN_USER3 && p === process.env.ADMIN_PASS3);
 
     if (isValid) {
         res.json({ success: true });
