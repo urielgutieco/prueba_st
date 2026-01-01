@@ -202,7 +202,8 @@
 
 <body x-data="{ 
     section: 'inicio', 
-    isAuthenticated: localStorage.getItem('isAuth') === 'true',
+    // Se cambió localStorage por sessionStorage para cierre automático al salir
+    isAuthenticated: sessionStorage.getItem('isAuth') === 'true',
     userTyped: '',
     passTyped: '',
     timeout: null,
@@ -211,6 +212,11 @@
     success: false,
 
     init() {
+        // Agregado: Listener para limpiar sesión si se cierra la ventana
+        window.addEventListener('beforeunload', () => {
+            // Opcional: puedes forzar el logout aquí si necesitas lógica extra en el servidor
+        });
+
         if (this.isAuthenticated) {
             this.resetTimer();
         }
@@ -236,7 +242,8 @@
         .then(data => {
             if (data.success) {
                 this.isAuthenticated = true;
-                localStorage.setItem('isAuth', 'true');
+                // Se cambió a sessionStorage
+                sessionStorage.setItem('isAuth', 'true');
                 this.section = 'formulario';
                 this.resetTimer();
             } else {
@@ -248,7 +255,8 @@
 
     logout() {
         this.isAuthenticated = false;
-        localStorage.removeItem('isAuth');
+        // Se cambió a sessionStorage
+        sessionStorage.removeItem('isAuth');
         this.section = 'inicio';
         if (this.timeout) clearTimeout(this.timeout);
     },
