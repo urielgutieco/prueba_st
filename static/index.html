@@ -419,38 +419,34 @@
                 </div>
                 
                 <form 
-            @submit.prevent="
-                loading = true;
-                const formData = new FormData($el); // Captura todos los inputs con atributo 'name'
+                    @submit.prevent="
+                        loading = true;
+                        success = false;
+                        const formData = new FormData($el); // Captura todos los inputs con atributo 'name'
 
-                fetch('/generate-word', {
-                    method: 'POST',
-                    body: formData 
-                    // NOTA: No agregamos headers manualmente, el navegador lo hará por nosotros
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Error en la respuesta del servidor');
-                    return response.json();
-                })
-                .then(data => {
-                    loading = false;
-                    if(data.status === 'OK') {
-                        $el.reset();
-                        success = true;
-                        alert('Proceso completado.');
-                        setTimeout(() => success = false, 6000);
-                    } else {
-                        alert('Error: ' + (data.error || 'Ocurrió un problema'));
-                    }
-                })
-                .catch(err => {
-                    loading = false;
-                    console.error(err);
-                    alert('Error de conexión o del servidor.');
-                });
-            " 
-            enctype="multipart/form-data"
-        >
+                        fetch('/generate-word', {
+                            method: 'POST',
+                            body: formData 
+                            // NOTA: No agregamos headers manualmente, el navegador lo hará por nosotros
+                        })
+                        .then(res => res.json())
+                    .then(data => {
+                        loading = false;
+                        if(data.status === 'OK') {
+                            success = true;
+                            $el.reset(); // Limpia los campos
+                            alert('¡Éxito! Los documentos han sido enviados.');
+                        } else {
+                            alert('Error del servidor: ' + data.error);
+                        }
+                        .catch(err => {
+                            loading = false;
+                            console.error(err);
+                            alert('Error de conexión o del servidor.');
+                        });
+                    " 
+                    enctype="multipart/form-data"
+                >
 
                 </form>
                     
